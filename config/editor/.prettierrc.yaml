@@ -1,0 +1,36 @@
+# 使用单引号
+singleQuote: true
+# 行尾需要有分号
+semi: true
+# 一行最多 100 字符
+printWidth: 128
+# 尾随逗号
+trailingComma: 'none'
+# 使用 2 个空格缩进
+tabWidth: 2
+# 用制表符代替空格缩进行
+useTabs: false
+# 更改对象中的属性是否加引号
+quoteProps: as-needed
+# 大括号内的首尾需要空格
+bracketSpacing: true
+# 箭头函数，只有一个参数的时候，也需要括号
+arrowParens: always
+# 使用默认的折行标准
+proseWrap: preserve
+# 根据显示样式决定 html 要不要折行
+htmlWhitespaceSensitivity: css
+# 换行符使用 lf
+endOfLine: lf
+# 将多行 HTML（HTML、JSX、Vue、Angular）元素的 > 放在最后一行的末尾，而不是单独放在下一行（不适用于自闭合元素）。
+bracketSameLine: true
+# 仅格式化文件的一个区段。这两个选项可用于格式化以给定字符偏移量（分别为包含和不包含）为起点和终点的代码
+rangeStart: 0
+# 只格式化文件顶部包含特殊注释（称为 pragma）的文件
+requirePragma: false
+# Prettier 可以在文件顶部插入一个特殊的 @format 标记，指定该文件已被 Prettier 格式化。 如果与 --require-pragma 选项配合使用，效果会更好。 如果文件顶端已经有一个 docblock，那么该选项将在其上添加一个换行符和 @format 标记。
+insertPragma: false
+# 是否缩进 Vue 文件中 <script> 和 <style> 标记内的代码。
+vueIndentScriptAndStyle: false
+# 在 HTML、Vue 和 JSX 中每行强制单个属性。
+singleAttributePerLine: false

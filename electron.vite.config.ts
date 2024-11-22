@@ -1,20 +1,30 @@
-import { resolve } from 'path'
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
-import vue from '@vitejs/plugin-vue'
+import { resolve } from 'path';
+import { defineConfig, externalizeDepsPlugin } from 'electron-vite';
+import vue from '@vitejs/plugin-vue';
+import { useAliasPathPlugin } from './config/vite-plugin/alias.vite.config';
+import type { UserConfig } from 'electron-vite';
 
-export default defineConfig({
-  main: {
-    plugins: [externalizeDepsPlugin()]
-  },
-  preload: {
-    plugins: [externalizeDepsPlugin()]
-  },
-  renderer: {
-    resolve: {
-      alias: {
-        '@renderer': resolve('src/renderer/src')
-      }
+export default defineConfig((_cfg) => {
+  const config: UserConfig = {
+    main: {
+      plugins: [
+        externalizeDepsPlugin({
+          exclude: ['nanoid']
+        })
+      ]
     },
-    plugins: [vue()]
-  }
-})
+    preload: {
+      plugins: [externalizeDepsPlugin()]
+    },
+    renderer: {
+      resolve: {
+        alias: {
+          '@renderer': resolve('src/renderer/src')
+        }
+      },
+      plugins: [vue()]
+    }
+  };
+  useAliasPathPlugin(config);
+  return config;
+});
