@@ -4,7 +4,8 @@ import type { UserConfig } from 'electron-vite';
 export function useAliasPathPlugin(config: UserConfig) {
   const pwd = process.cwd();
   const option = {
-    '@': resolve(pwd, 'src')
+    '@': resolve(pwd, 'src'),
+    '$': resolve(pwd)
   };
   config.main!.resolve ??= {};
   config.main!.resolve!.alias = option;
