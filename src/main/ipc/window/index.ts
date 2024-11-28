@@ -1,8 +1,10 @@
-import { BrowserWindow } from 'electron'
+import { BrowserWindow, IpcMainInvokeEvent } from 'electron';
+import { getStore } from '../ctx';
 
 export function maximize() {
-  const window = BrowserWindow.getFocusedWindow()
+  const event = getStore<IpcMainInvokeEvent>();
+  const window = BrowserWindow.fromWebContents(event.sender);
   if (window) {
-    window.maximize()
+    window.maximize();
   }
 }

@@ -1,5 +1,6 @@
 import * as Handles from './handles';
-import { ipcMain, IpcMainEvent, IpcMainInvokeEvent } from 'electron';
+import { ipcMain, IpcMainInvokeEvent } from 'electron';
+import { run } from './ctx';
 
 export function useIpcHandle() {
   const serviceNameList = Object.keys(Handles);
@@ -16,11 +17,13 @@ export function useIpcHandle() {
         continue;
       }
       ipcMain.handle(handle, (event: IpcMainInvokeEvent, ...args: any[]) => {
-        return callback(...args, event);
+        return run(event, () => {
+          return Promise.resolve(callback(...args, event));
+        });
       });
       console.log(`handle: [${handle}] 注册了\n`);
     }
   }
 }
 
-export default useIpcHandle
+export default useIpcHandle;
