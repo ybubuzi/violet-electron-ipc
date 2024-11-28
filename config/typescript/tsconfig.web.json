@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.basic.json",
   "include": [
+    "../../src/shared/**/*",
     "../../src/renderer/src/env.d.ts",
     "../../src/renderer/src/**/*",
     "../../src/renderer/src/**/*.vue",

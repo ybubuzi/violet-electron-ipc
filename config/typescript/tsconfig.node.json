@@ -3,6 +3,7 @@
   "include": [
     "../vite-plugin/*.vite.config.*",
     "../../electron.vite.config.*",
+    "../../src/shared/**/*",
     "../../src/main/**/*",
     "../../src/preload/**/*",
   ],

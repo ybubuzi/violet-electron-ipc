@@ -45,12 +45,12 @@ export type NotifyTypeMap = {
  * @param args
  * @returns
  */
-export function sendToWebContent<T extends keyof NotifyTypeMap>(event: T, params: NotifyTypeMap[T]) {
+export function sendToWebContent<T extends keyof NotifyTypeMap>(event: T, ...params: DestructionTuple<NotifyTypeMap[T]>) {
   const contentSet = NOTIFY_TARGET_MAPPER.get(event);
   if (!contentSet) {
     return;
   }
   for (const web of contentSet) {
-    web.send(event, params);
+    web.send(event, ...params);
   }
 }
