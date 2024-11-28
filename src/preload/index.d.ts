@@ -11,11 +11,12 @@ type HandleApi = {
   };
 };
 
-type NotifyCallback = (...args: any[]) => void;
+import type { NotifyTypeMap } from '@/main/notify';
+
 interface Notify {
-  addListener(event: string, callback: NotifyCallback);
-  removeListener(event: string, callback: NotifyCallback);
-  removeAllListeners(event: string);
+  addListener<T extends keyof NotifyTypeMap>(event: T, callback: (param: NotifyTypeMap[T]) => void);
+  removeListener<T extends keyof NotifyTypeMap>(event: T, callback: (param: NotifyTypeMap[T]) => void);
+  removeAllListeners<T extends keyof NotifyTypeMap>(event: T);
 }
 
 declare global {

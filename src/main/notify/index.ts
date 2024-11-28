@@ -21,8 +21,8 @@ export function addTargetNotify(event: string, invokeEvent: IpcMainInvokeEvent) 
 
 /**
  * 移除通知目标
- * @param event 
- * @param invokeEvent 
+ * @param event
+ * @param invokeEvent
  */
 export function removeTargetNotify(event: string, invokeEvent: IpcMainInvokeEvent) {
   if (!invokeEvent.sender) {
@@ -34,18 +34,23 @@ export function removeTargetNotify(event: string, invokeEvent: IpcMainInvokeEven
   }
 }
 
+export type NotifyTypeMap = {
+  hello: string;
+  login: { username: string; password: string };
+};
+
 /**
  * 向渲染进程发送通知
- * @param event 
- * @param args 
- * @returns 
+ * @param event
+ * @param args
+ * @returns
  */
-export function sendToWebContent(event: string, ...args: any[]) {
+export function sendToWebContent<T extends keyof NotifyTypeMap>(event: T, params: NotifyTypeMap[T]) {
   const contentSet = NOTIFY_TARGET_MAPPER.get(event);
   if (!contentSet) {
     return;
   }
   for (const web of contentSet) {
-    web.send(event, ...args);
+    web.send(event, params);
   }
 }
