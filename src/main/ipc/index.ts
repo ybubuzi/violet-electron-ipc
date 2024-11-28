@@ -1,6 +1,7 @@
 import * as Handles from './handles';
 import { ipcMain, IpcMainEvent, IpcMainInvokeEvent } from 'electron';
 
+
 export function useIpcHandle() {
   const serviceNameList = Object.keys(Handles);
   for (const serviceName of serviceNameList) {
