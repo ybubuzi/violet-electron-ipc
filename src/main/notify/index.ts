@@ -35,8 +35,9 @@ export function removeTargetNotify(event: string, invokeEvent: IpcMainInvokeEven
 }
 
 export type NotifyTypeMap = {
-  hello: string;
+  hello: [string, number];
   login: { username: string; password: string };
+  say: string;
 };
 
 /**

@@ -5,5 +5,11 @@ declare global {
   type IsTuple<T> = T extends [infer First, ...infer Rest] ? T : never;
   /* 解构一个元组，将其平摊展开,若不是元组则返回自身 */
   type DestructionTuple<T> =
-    IsTuple<T> extends never ? [T] : T extends [infer F, ...infer R] ? [F, ...DestructionTuple<R>] : never;
+    IsTuple<T> extends never
+      ? [T]
+      : T extends [infer F, ...infer R]
+        ? R['length'] extends 0
+          ? [F]
+          : [F, ...DestructionTuple<R>]
+        : [never];
 }

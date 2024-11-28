@@ -14,8 +14,8 @@ type HandleApi = {
 import type { NotifyTypeMap } from '@/main/notify';
 
 interface Notify {
-  addListener<T extends keyof NotifyTypeMap>(event: T, callback: (param: NotifyTypeMap[T]) => void);
-  removeListener<T extends keyof NotifyTypeMap>(event: T, callback: (param: NotifyTypeMap[T]) => void);
+  addListener<T extends keyof NotifyTypeMap>(event: T, callback: (...params: DestructionTuple<NotifyTypeMap[T]>) => void);
+  removeListener<T extends keyof NotifyTypeMap>(event: T, callback: (...params: DestructionTuple<NotifyTypeMap[T]>) => void);
   removeAllListeners<T extends keyof NotifyTypeMap>(event: T);
 }
 
