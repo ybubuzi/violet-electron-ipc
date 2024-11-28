@@ -44,7 +44,7 @@ app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron');
   setInterval(()=>{
-    sendToWebContent('hello',"i'm bubuzi")
+    sendToWebContent('hello',"i'm bubuzi",123)
   },2000)
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue';
 
-const msg1 = window.api.message.getMsg2("hello");
+window.api.message.getMsg2("hello");
 
 
 

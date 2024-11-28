@@ -5,11 +5,22 @@
     "../../src/renderer/src/env.d.ts",
     "../../src/renderer/src/**/*",
     "../../src/renderer/src/**/*.vue",
-    "../../src/preload/*.d.ts",
-    "../../src/main/ipc/**/*.ts"
+    "../../src/preload/*.d.ts"
   ],
   "compilerOptions": {
+    "baseUrl": "../../src/renderer",
     "composite": true,
-     
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "typeRoots": [
+      "../../src/shared",
+      "../../node_modules"
+    ],
+    "types": [
+      "global",
+      "vite/client"
+    ],
   }
 }

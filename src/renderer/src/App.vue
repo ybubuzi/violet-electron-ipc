@@ -14,4 +14,5 @@ onMounted(() => {
 <template>
   <Test v-if="flag" />
   <Versions />
+  <button @click="ipcHandle">ping</button>
 </template>
