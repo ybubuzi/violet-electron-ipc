@@ -9,10 +9,10 @@ type DeepHandleApi<T extends Object> = {
   [key in keyof T]: T[key] extends Function ? ApiInvokeFunction<T[key]> : DeepHandleApi<T[key]>;
 };
 
-type NotifyCallback<T extends IPC.NotifyEvent> = (...params: DestructionTuple<IPC.NotifyTypeMap[T]>) => void;
+
 interface Notify {
-  addListener<T extends IPC.NotifyEvent>(event: T, callback: NotifyCallback<T>);
-  removeListener<T extends IPC.NotifyEvent>(event: T, callback: NotifyCallback<T>);
+  addListener<T extends IPC.NotifyEvent>(event: T, callback: IPC.NotifyCallback<T>);
+  removeListener<T extends IPC.NotifyEvent>(event: T, callback: IPC.NotifyCallback<T>);
   removeAllListeners<T extends IPC.NotifyEvent>(event: T);
 }
 
