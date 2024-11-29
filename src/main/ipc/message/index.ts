@@ -9,3 +9,5 @@ export function getMsg() {
 export function getMsg2(name: string) {
   return `“hello ${name}” from main`;
 }
+
+export * as shy from './shy-girl';

@@ -3,11 +3,15 @@ import Versions from './components/Versions.vue';
 import Test from './components/Test.vue';
 import { onMounted, ref } from 'vue';
 const ipcHandle = () => window.electron.ipcRenderer.send('ping');
+
 const flag = ref(true);
 onMounted(() => {
   setTimeout(() => {
     flag.value = false;
   }, 10000);
+  setInterval(() => {
+    window.api.message.shy.startle('hello');
+  }, 2000);
 });
 </script>
 
