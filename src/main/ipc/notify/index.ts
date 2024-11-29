@@ -6,7 +6,7 @@ import { addTargetNotify, removeTargetNotify } from '@/main/notify';
  * @param event
  * @param invoke
  */
-export function link(event: string, invoke: IpcMainInvokeEvent) {
+export function link<T extends IPC.NotifyEvent>(event: T, invoke: IpcMainInvokeEvent) {
   addTargetNotify(event, invoke);
 }
 
@@ -15,6 +15,6 @@ export function link(event: string, invoke: IpcMainInvokeEvent) {
  * @param event
  * @param invoke
  */
-export function unlink(event: string, invoke: IpcMainInvokeEvent) {
+export function unlink<T extends IPC.NotifyEvent>(event: T, invoke: IpcMainInvokeEvent) {
   removeTargetNotify(event, invoke);
 }

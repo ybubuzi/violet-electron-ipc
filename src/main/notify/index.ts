@@ -7,9 +7,9 @@ const NOTIFY_TARGET_MAPPER = new Map<string, Set<WebContents>>();
  * @param event
  * @param invokeEvent
  */
-export function addTargetNotify(event: string, invokeEvent: IpcMainInvokeEvent) {
+export function addTargetNotify<T extends IPC.NotifyEvent>(event: T, invokeEvent: IpcMainInvokeEvent) {
   if (!invokeEvent.sender) {
-    throw new Error('addTargetNotify');
+    throw new Error('The sender is null');
   }
   let contentSet = NOTIFY_TARGET_MAPPER.get(event);
   if (!contentSet) {
@@ -24,9 +24,9 @@ export function addTargetNotify(event: string, invokeEvent: IpcMainInvokeEvent) 
  * @param event
  * @param invokeEvent
  */
-export function removeTargetNotify(event: string, invokeEvent: IpcMainInvokeEvent) {
+export function removeTargetNotify<T extends IPC.NotifyEvent>(event: T, invokeEvent: IpcMainInvokeEvent) {
   if (!invokeEvent.sender) {
-    throw new Error('removeTargetNotify');
+    throw new Error('The sender is null');
   }
   const contentSet = NOTIFY_TARGET_MAPPER.get(event);
   if (contentSet) {
@@ -46,7 +46,7 @@ export type NotifyTypeMap = {
  * @param args
  * @returns
  */
-export function sendToWebContent<T extends keyof NotifyTypeMap>(event: T, ...params: DestructionTuple<NotifyTypeMap[T]>) {
+export function sendToWebContent<T extends IPC.NotifyEvent>(event: T, ...params: IPC.RemnantParams<T>) {
   const contentSet = NOTIFY_TARGET_MAPPER.get(event);
   if (!contentSet) {
     return;

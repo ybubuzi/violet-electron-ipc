@@ -11,12 +11,10 @@ type HandleApi = {
   };
 };
 
-import type { NotifyTypeMap } from '@/main/notify';
-
 interface Notify {
-  addListener<T extends keyof NotifyTypeMap>(event: T, callback: (...params: DestructionTuple<NotifyTypeMap[T]>) => void);
-  removeListener<T extends keyof NotifyTypeMap>(event: T, callback: (...params: DestructionTuple<NotifyTypeMap[T]>) => void);
-  removeAllListeners<T extends keyof NotifyTypeMap>(event: T);
+  addListener<T extends IPC.NotifyEvent>(event: T, callback: (...params: DestructionTuple<IPC.NotifyTypeMap[T]>) => void);
+  removeListener<T extends IPC.NotifyEvent>(event: T, callback: (...params: DestructionTuple<IPC.NotifyTypeMap[T]>) => void);
+  removeAllListeners<T extends IPC.NotifyEvent>(event: T);
 }
 
 declare global {
