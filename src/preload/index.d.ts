@@ -1,4 +1,5 @@
 import { ElectronAPI } from '@electron-toolkit/preload';
+import type * as IPC from '@/main/notify/types';
 
 type HandleLike = typeof import('@/main/ipc/handles');
 type HandleLikeServices = keyof HandleLike;
