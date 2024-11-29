@@ -7,7 +7,7 @@ import { run } from './ctx';
  * @param module
  * @param prefix
  */
-export function deepIpcHandle(module: Object, prefix: string = '') {
+function deepIpcHandle(module: Object, prefix: string = '') {
   const memberList = Object.keys(module);
   for (const memberName of memberList) {
     const handle = '' === prefix ? memberName : `${prefix}-${memberName}`;
