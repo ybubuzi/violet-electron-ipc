@@ -11,10 +11,10 @@ type HandleApi = {
     ) => Promise<ReturnType<HandleLike[ServiceName][ServiceFunctionName]>>;
   };
 };
-
+type NotifyCallback<T extends IPC.NotifyEvent> = (...params: DestructionTuple<IPC.NotifyTypeMap[T]>) => void;
 interface Notify {
-  addListener<T extends IPC.NotifyEvent>(event: T, callback: (...params: DestructionTuple<IPC.NotifyTypeMap[T]>) => void);
-  removeListener<T extends IPC.NotifyEvent>(event: T, callback: (...params: DestructionTuple<IPC.NotifyTypeMap[T]>) => void);
+  addListener<T extends IPC.NotifyEvent>(event: T, callback: NotifyCallback<T>);
+  removeListener<T extends IPC.NotifyEvent>(event: T, callback: NotifyCallback<T>);
   removeAllListeners<T extends IPC.NotifyEvent>(event: T);
 }
 
