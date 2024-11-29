@@ -1,6 +1,6 @@
 import { IpcMainInvokeEvent } from 'electron';
 import { addTargetNotify, removeTargetNotify } from '@/main/notify';
-
+import * as IPC from '@/main/notify/types'
 /**
  * 建立通知回调链接
  * @param event

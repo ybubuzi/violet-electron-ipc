@@ -1,5 +1,5 @@
 import { WebContents, IpcMainInvokeEvent } from 'electron';
-
+import * as IPC from '@/main/notify/types'
 const NOTIFY_TARGET_MAPPER = new Map<string, Set<WebContents>>();
 
 /**
@@ -34,11 +34,6 @@ export function removeTargetNotify<T extends IPC.NotifyEvent>(event: T, invokeEv
   }
 }
 
-export type NotifyTypeMap = {
-  hello: [string, number];
-  login: { username: string; password: string };
-  say: string;
-};
 
 /**
  * 向渲染进程发送通知
