@@ -9,7 +9,7 @@ const IPC_METHOD_MODIFIER_NAME = 'IpcMethod';
 interface BuildInfo {
   methods: string[];
   className: string;
-  instanceName: string;
+  interfaceName: string;
   path: string;
 }
 
@@ -94,12 +94,12 @@ function parseProject(tsConfigPath, tsRootPath = './config/typescript') {
       });
 
       const args = modifier.expression.arguments;
-      let instanceName = args[0]?.text ?? className;
-      instanceName = lowercaseFirst(instanceName);
+      let interfaceName = args[0]?.text ?? className;
+      interfaceName = lowercaseFirst(interfaceName);
       buildInfos.push({
         methods,
         className,
-        instanceName,
+        interfaceName,
         path: sourceFile.fileName
       });
     }
@@ -125,10 +125,10 @@ function infoToCode(buildInfo: BuildInfo[]) {
 type PickFunToPromise<T, K extends keyof T> = {
   [P in K]: FunToPromise<T[P]>;
 };`);
-  for (const { methods, path, className, instanceName } of buildInfo) {
+  for (const { methods, path, className, interfaceName } of buildInfo) {
     dtsContent.unshift(`import type ${className} from '@/main/ipc/decorator/controller/${className}';`);
     const methodsStr = methods.map((item) => `'${item}'`);
-    dtsContent.push(`   ${instanceName}: PickFunToPromise<${className}, ${methodsStr.join(' | ')}>;`);
+    dtsContent.push(`   ${interfaceName}: PickFunToPromise<${className}, ${methodsStr.join(' | ')}>;`);
   }
   dtsContent.push(`}`);
   const dts = dtsContent.join('\n') + '\n';
