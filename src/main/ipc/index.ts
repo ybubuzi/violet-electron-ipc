@@ -1,6 +1,8 @@
 import * as Handles from './handles';
 import { ipcMain, IpcMainInvokeEvent } from 'electron';
 import { run } from './ctx';
+import 'reflect-metadata';
+import './decorator/SacnController';
 
 /**
  * 深度代理ipc，支持深层ipc嵌套

@@ -9,17 +9,18 @@ type DeepHandleApi<T extends Object> = {
   [key in keyof T]: T[key] extends Function ? ApiInvokeFunction<T[key]> : DeepHandleApi<T[key]>;
 };
 
-
 interface Notify {
   addListener<T extends IPC.NotifyEvent>(event: T, callback: IPC.NotifyCallback<T>);
   removeListener<T extends IPC.NotifyEvent>(event: T, callback: IPC.NotifyCallback<T>);
   removeAllListeners<T extends IPC.NotifyEvent>(event: T);
 }
 
+import type { ControllerApi } from './ControllerApi';
+
 declare global {
   interface Window {
     electron: ElectronAPI;
-    api: HandleApi;
+    api: HandleApi & ControllerApi;
     notify: Notify;
   }
 }

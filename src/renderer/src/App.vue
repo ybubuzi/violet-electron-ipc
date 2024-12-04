@@ -9,8 +9,13 @@ onMounted(() => {
   setTimeout(() => {
     flag.value = false;
   }, 10000);
-  setInterval(() => {
+  setInterval(async () => {
     window.api.message.shy.startle('hello');
+
+    const ss = await window.api.hadaController.test('111', '222');
+    console.log(ss);
+    const ss1 = await window.api.userController.login('333', '444');
+    console.log(ss1);
   }, 2000);
 });
 </script>
