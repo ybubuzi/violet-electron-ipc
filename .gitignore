@@ -7,3 +7,4 @@ out
 package-lock.json
 build-dev
 electron.vite.config.[0-9]*.mjs
+conf

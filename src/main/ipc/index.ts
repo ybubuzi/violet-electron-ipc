@@ -15,7 +15,7 @@ function deepIpcHandle(module: Object, prefix: string = '') {
     if (typeof member === 'function') {
       ipcMain.handle(handle, (event: IpcMainInvokeEvent, ...args: any[]) => {
         return run(event, () => {
-          return Promise.resolve(member(...args, event));
+          return Promise.resolve(member(...args));
         });
       });
       console.log(`handle: [${handle}] 注册了\n`);

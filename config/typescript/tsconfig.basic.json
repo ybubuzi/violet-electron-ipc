@@ -7,7 +7,7 @@
     "target": "esnext",
     "module": "esnext",
     "sourceMap": false,
-    "strict": true,
+    "strict": false,
     "jsx": "preserve",
     "esModuleInterop": true,
     "moduleResolution": "node",
