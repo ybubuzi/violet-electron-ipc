@@ -13,5 +13,5 @@ function overwriteFile(filePath, overwriteFilePath) {
   fs.writeFileSync(filePath, JSON.stringify(settings, null, 2), 'utf-8');
 }
 
-overwriteFile('.vscode/settings.json', './config/editor/.vscode/settings.json');
-overwriteFile('.vscode/launch.json', './config/editor/.vscode/launch.json');
+overwriteFile('.vscode/settings.json', './config/editor/.back.vscode/settings.json');
+overwriteFile('.vscode/launch.json', './config/editor/.back.vscode/launch.json');
