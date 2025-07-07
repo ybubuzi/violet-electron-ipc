@@ -30,6 +30,7 @@ const api = new Proxy(async function () {}, handle);
  */
 class Notify {
   private listenerMapper: Map<string, Array<WeakRef<Function>>> = new Map();
+  private ipcEventCounter: Map<string, number> = new Map();
   addListener(event: string, callback: Function) {
     let callbackArray = this.listenerMapper.get(event);
     if (!callbackArray) {
@@ -68,6 +69,12 @@ class Notify {
   }
 
   private linkListener(event: string) {
+    const count = this.ipcEventCounter.get(event) || 0;
+    if (count > 0) {
+      this.ipcEventCounter.set(event, count + 1);
+      return;
+    }
+    this.ipcEventCounter.set(event, 1);
     // @ts-ignore
     window.electron.ipcRenderer.on(event, (_invoke: import('electron').IpcRendererEvent, ...args: any[]) => {
       let callbackArray = this.listenerMapper.get(event);
