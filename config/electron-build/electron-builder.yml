@@ -1,7 +1,8 @@
 appId: com.electron.app
 productName: ipc-demo
-directories:
-  buildResources: build
+# directories:
+  # 是否将resources编译进asar文件中
+  # buildResources: build
 files:
   - '!**/.vscode/*'
   - '!src/*'
@@ -9,16 +10,20 @@ files:
   - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - '!config'
 asarUnpack:
   - resources/**
 win:
   executableName: ipc-demo
+  # 跳过签名，除非你确定需要，不然会打包报错
+  sign: 
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
+  identity:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
     - NSCameraUsageDescription: Application requests access to the device's camera.

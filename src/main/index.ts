@@ -1,9 +1,11 @@
+import '@/main/extend';
 import { app, shell, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '$/resources/icon.png?asset';
 import { useIpcHandle } from '@/main/ipc';
-import { sendToWebContent} from '@/main/notify'
+import { sendToWebContent } from '@/main/notify';
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -40,12 +42,12 @@ function createWindow(): void {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  useIpcHandle()
+  useIpcHandle();
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron');
-  setInterval(()=>{
-    sendToWebContent('hello',"i'm bubuzi",123)
-  },2000)
+  setInterval(() => {
+    sendToWebContent('hello', "i'm bubuzi", 123);
+  }, 2000);
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils

@@ -4,7 +4,7 @@ export function get<T>(key: string, defaultValue?: T) {
   return AppStore.getInstance().get(key, defaultValue);
 }
 
-export function set<T, R>(key: string, newValue?: T) {
+export function set<T>(key: string, newValue?: T) {
   let mergeValue = newValue;
   const oldValue = get(key);
   if (typeof oldValue === 'object') {
