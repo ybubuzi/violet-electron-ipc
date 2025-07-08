@@ -1,8 +1,6 @@
-import { createRequire } from 'node:module';
-import fs from 'fs';
-import path from 'path';
-import Module from 'module';
-const require = createRequire(import.meta.url);
+const fs = require('fs');
+const path = require('path');
+const Module = require('module');
 const RESOURCE_PATH = path.join(path.parse(process.execPath).dir, 'resources');
 
 /**

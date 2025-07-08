@@ -19,7 +19,8 @@
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win --config ./config/electron-build/electron-builder.yml",
     "build:mac": "npm run build && electron-builder --mac",
-    "build:linux": "npm run build && electron-builder --linux"
+    "build:linux": "npm run build && electron-builder --linux",
+    "build:tiny:win": "npm run build && node ./config/electron-build/split-asar-builder.mjs"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
