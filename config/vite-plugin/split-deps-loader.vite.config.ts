@@ -1,6 +1,7 @@
 import { type Plugin } from 'vite';
 import fs from 'fs';
 import path from 'path';
+
 import type { UserConfig } from 'electron-vite';
 
 const splitDepLoaderCode = [
@@ -23,6 +24,7 @@ const splitDepLoaderCode = [
   `  return depModule;`,
   `};`
 ];
+const isDev = process.env.NODE_ENV_ELECTRON_VITE === 'development';
 const loaderFileName = 'split-deps-loader.cjs';
 function splitDepLoaderPlugin(): Plugin | null {
   return {
@@ -40,6 +42,9 @@ function splitDepLoaderPlugin(): Plugin | null {
       }
     },
     writeBundle: async function (options, output) {
+      if (isDev) {
+        return;
+      }
       if (options.format === 'es') {
         return;
       }

@@ -18,7 +18,7 @@ function deepIpcHandle(module: Object, prefix: string = '') {
           return Promise.resolve(member(...args));
         });
       });
-      console.log(`handle: [${handle}] 注册了\n`);
+      console.log(`handle: [{0}] 注册了`.format(handle));
     }
     if (typeof member === 'object') {
       deepIpcHandle(member, handle);
