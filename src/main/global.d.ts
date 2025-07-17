@@ -24,4 +24,33 @@ declare global {
      */
     format(...args: any[]): string;
   }
+
+  interface Number {
+    /**
+     * 获取数字在指定偏移位置的位(0或1)
+     * @param offset - 从右到左的偏移量 (0-based)
+     * @returns 0 或 1
+     * @example
+     * // 对于数字 5 (二进制 0101)
+     * (5).bitAt(0); // 1
+     * (5).bitAt(1); // 0
+     * (5).bitAt(2); // 1
+     * (5).bitAt(3); // 0
+     */
+    bitAt(offset: number): number;
+
+    /**
+     * 通过掩码获取数字在指定位置的位(0或1)
+     * 注意: 掩码必须是2的幂 (e.g., 1, 2, 4, 8, ...).
+     * @param mask - 用于计算位偏移的掩码 (例如: 1, 2, 4, 8)
+     * @returns 0 或 1
+     * @example
+     * // 对于数字 5 (二进制 0101)
+     * (5).bitMask(1);  // 1 (检查第0位)
+     * (5).bitMask(2);  // 0 (检查第1位)
+     * (5).bitMask(4);  // 1 (检查第2位)
+     * (5).bitMask(8);  // 0 (检查第3位)
+     */
+    bitMask(mask: number): number;
+  }
 }
