@@ -25,6 +25,38 @@ declare global {
     format(...args: any[]): string;
   }
 
+  interface StringConstructor {
+    /**
+     * 增强版的 String.raw, 用于创建多行字符串, 自动去除多余的公共前导缩进.
+     * 这在编写嵌入代码块 (如 SQL, HTML) 时非常有用, 可以保持源代码的可读性, 同时生成整洁的字符串.
+     *
+     * @param callSite 模板字符串调用点对象.
+     * @param substitutions 模板字符串中的插值.
+     * @returns 移除了公共缩进并处理了插值的字符串.
+     * @example
+     * // 源代码中为了对齐而添加的空格会被移除
+     * const query = String.rawEx`
+     *   SELECT
+     *     id,
+     *     name
+     *   FROM
+     *     users
+     *   WHERE
+     *     age > ${25};
+     * `;
+     * // 输出:
+     * // SELECT
+     * //   id,
+     * //   name
+     * // FROM
+     * //   users
+     * // WHERE
+     * //   age > 25;
+     * // (注意: 'id', 'name' 前的相对缩进被保留)
+     */
+    rawEx(callSite: TemplateStringsArray, ...substitutions: any[]): string;
+  }
+
   interface Number {
     /**
      * 获取数字在指定偏移位置的位(0或1)
