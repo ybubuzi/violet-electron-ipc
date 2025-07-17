@@ -38,39 +38,28 @@ if (!String.rawEx) {
   String.rawEx = function (callSite: TemplateStringsArray, ...substitutions: any[]) {
     const rawString = String.raw(callSite, ...substitutions);
     const lines = rawString.split(/\r?\n/);
-
-    let firstLine = 0;
-    while (firstLine < lines.length && /^\s*$/.test(lines[firstLine])) {
-      firstLine++;
+    if (lines.length > 1) {
+      if (lines[0] === '') {
+        lines.shift();
+      }
+      if (lines[lines.length - 1] === '') {
+        lines.pop();
+      }
     }
 
-    let lastLine = lines.length - 1;
-    while (lastLine >= firstLine && /^\s*$/.test(lines[lastLine])) {
-      lastLine--;
-    }
-
-    if (firstLine > lastLine) {
-      return '';
-    }
-
-    let minIndent = -1;
-    for (let i = firstLine; i <= lastLine; i++) {
-      const line = lines[i];
-      if (!/^\s*$/.test(line)) {
-        const match = line.match(/^(\s*)/);
-        const indent = match[1].length;
-        if (minIndent === -1 || indent < minIndent) {
-          minIndent = indent;
+    let minSpaceCount = Number.MAX_SAFE_INTEGER;
+    for (const line of lines) {
+      if (/^\s.*$/.test(line)) {
+        const currCount = line.length - line.replace(/^\s+/, '').length;
+        if (currCount < minSpaceCount && currCount > 0) {
+          minSpaceCount = currCount;
         }
       }
     }
-
-    if (minIndent > 0) {
-      const indentRegex = new RegExp(`^\\s{${minIndent}}`);
-      for (let i = firstLine; i <= lastLine; i++) {
-        lines[i] = lines[i].replace(indentRegex, '');
-      }
+    const spaceRegex = new RegExp(`^\\s{${minSpaceCount}}`);
+    for (let i = 0; i < lines.length; i++) {
+      lines[i] = lines[i].replace(spaceRegex, '');
     }
-    return lines.slice(firstLine, lastLine + 1).join('\n');
+    return lines.join('\n');
   };
 }
