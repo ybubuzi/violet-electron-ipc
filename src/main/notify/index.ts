@@ -15,13 +15,6 @@ const NOTIFY_TARGET_MAPPER = new Map<string, Set<WebContents>>();
 const NOTIFY_SENDER_STATUS_MAPPER = new Map<WebContents, Set<string>>();
 
 /**
- * @description 记录渲染进程是否已经准备好接收通知
- * @summary 渲染进程加载完成后，会通过 IPC 调用 `rendererReadyForNotifications` 方法，此时该状态位才被设置为 true
- * @summary 渲染进程刷新(F5)或销毁时，该状态位会被重置为 false
- */
-const RENDERER_READY_FLAG_MAPPER = new Map<WebContents, boolean>();
-
-/**
  * @description 等待队列，用于暂存未就绪的渲染进程的通知注册请求
  * @summary 当 `addTargetNotify` 被调用但渲染进程尚未就绪时，请求将进入此队列
  * @summary 渲染进程就绪后，将遍历此队列，完成所有挂起的注册
@@ -66,30 +59,16 @@ function setupWebContentLifecycleHandlers(webContent: WebContents) {
     return;
   }
 
-  // 当页面刷新(F5)或首次加载完成时触发
-  const loadHandler = () => {
-    // 刷新意味着旧的渲染器进程已失效，新的即将开始
-    // 因此需要重置就绪状态，并清理掉旧的监听器
-    console.log(`[Notify] WebContents (ID: {0}) did-finish-load. Resetting state.`.format(webContent.id));
-    RENDERER_READY_FLAG_MAPPER.set(webContent, false); // 重置就绪状态
-    clearSenderRegistrations(webContent); // 清理所有旧的通知注册
-    rendererReadyForNotifications(webContent); // 处理等待中的注册队列
-  };
-
   // 当窗口关闭或 webContent 被销毁时触发
   const destroyHandler = () => {
     console.log(`[Notify] WebContents (ID: {0}) destroyed. Cleaning up.`.format(webContent.id));
     clearSenderRegistrations(webContent); // 清理通知注册
-    RENDERER_READY_FLAG_MAPPER.delete(webContent);
     NOTIFY_WAIT_QUEUE.delete(webContent);
     LIFECYCLE_HANDLER_FLAG_MAPPER.delete(webContent);
 
-    // 移除事件监听器，防止内存泄漏
-    webContent.removeListener('did-finish-load', loadHandler);
     webContent.removeListener('destroyed', destroyHandler);
   };
 
-  webContent.on('did-finish-load', loadHandler);
   webContent.on('destroyed', destroyHandler);
 
   // 设置标志位，表示该 webContent 的生命周期事件已在监听
@@ -126,8 +105,6 @@ function doAddTargetNotify(event: string, webContent: WebContents) {
 export function rendererReadyForNotifications(webContent: WebContents) {
   console.log(`[Notify] WebContents (ID: {0}) is ready for notifications.`.format(webContent.id));
 
-  RENDERER_READY_FLAG_MAPPER.set(webContent, true);
-
   const waitingEvents = NOTIFY_WAIT_QUEUE.get(webContent);
   if (waitingEvents && waitingEvents.size > 0) {
     console.log(`[Notify] Processing wait queue for WebContents (ID: {0}). Events:`.format(webContent.id), waitingEvents);
@@ -149,19 +126,6 @@ export function addTargetNotify<T extends IPC.NotifyEvent>(event: T, invokeEvent
   const webContent = invokeEvent.sender;
   if (!webContent || webContent.isDestroyed()) {
     console.error('[Notify] Attempted to add notify target to a destroyed or null WebContents.');
-    return;
-  }
-
-  // 检查渲染进程是否已就绪
-  if (!RENDERER_READY_FLAG_MAPPER.get(webContent)) {
-    // 如果未就绪，则将请求加入等待队列
-    console.log(`[Notify] WebContents (ID: {0}) is not ready. Queuing event '{1}'.`.format(webContent.id, event));
-    if (!NOTIFY_WAIT_QUEUE.has(webContent)) {
-      NOTIFY_WAIT_QUEUE.set(webContent, new Set());
-    }
-    NOTIFY_WAIT_QUEUE.get(webContent)!.add(event);
-    // 确保生命周期处理器已设置，以便在销毁时能清理等待队列
-    setupWebContentLifecycleHandlers(webContent);
     return;
   }
 

@@ -13,7 +13,12 @@ const handle: ProxyHandler<ApiLike> = {
   apply(target: ApiLike, _thisArg, argumentsList: any[]) {
     if (target.parent) {
       // @ts-ignore
-      return window.electron.ipcRenderer.invoke(target.parent, ...argumentsList);
+      return Promise.resolve(window.electron.ipcRenderer.invoke(target.parent, ...argumentsList)).then((result) => {
+        if (result.status === 'error') {
+          throw result.error;
+        }
+        return result.data;
+      });
     }
   }
 };

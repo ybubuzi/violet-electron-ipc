@@ -2,6 +2,29 @@ import * as Handles from './handles';
 import { ipcMain, IpcMainInvokeEvent } from 'electron';
 import { run } from './ctx';
 
+function ipcResultWrap(handle: string, result?: unknown, error?: unknown) {
+  const pack = {
+    handle,
+    status: !!error ? 'error' : 'success',
+    data: result,
+    error: {
+      handle,
+      message: undefined
+    }
+  };
+  if (error) {
+    if (error instanceof Error) {
+      pack.error.message = error.message;
+    } else if (error instanceof Object) {
+      pack.error.message = JSON.stringify(error);
+    } else {
+      pack.error.message = String(error);
+    }
+  }
+
+  return pack;
+}
+
 /**
  * 深度代理ipc，支持深层ipc嵌套
  * @param module
@@ -14,8 +37,15 @@ function deepIpcHandle(module: Object, prefix: string = '') {
     const member = module[memberName];
     if (typeof member === 'function') {
       ipcMain.handle(handle, (event: IpcMainInvokeEvent, ...args: any[]) => {
-        return run(event, () => {
-          return Promise.resolve(member(...args));
+        return run(event, async () => {
+          let result: unknown;
+          let error: unknown;
+          try {
+            result = await member(...args);
+          } catch (_error) {
+            error = _error;
+          }
+          return ipcResultWrap(handle, result, error);
         });
       });
       console.log(`handle: [{0}] 注册了`.format(handle));
