@@ -20,6 +20,7 @@ const handle: ProxyHandler<ApiLike> = {
         return result.data;
       });
     }
+    return undefined;
   }
 };
 const api = new Proxy(async function () {}, handle);

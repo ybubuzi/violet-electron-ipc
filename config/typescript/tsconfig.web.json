@@ -1,11 +1,10 @@
 {
   "extends": "./tsconfig.basic.json",
-  "include": [
-    "../../src/shared/**/*",
-    "../../src/renderer/src/env.d.ts",
-    "../../src/renderer/src/**/*",
-    "../../src/renderer/src/**/*.vue",
-    "../../src/preload/*.d.ts",
+  "include": [ 
+    "../../src/renderer/**/*.ts",
+    "../../src/renderer/**/*.js",
+    "../../src/renderer/**/*.vue",
+    "../../src/**/*.d.ts"
   ],
   "compilerOptions": {
     "baseUrl": "../../",
@@ -14,13 +13,9 @@
       "dom",
       "esnext"
     ],
-    "typeRoots": [
-      "../../src/shared",
-      "../../node_modules"
-    ],
     "types": [
-      "global",
       "vite/client"
     ],
+    "skipLibCheck": true,
   }
 }

@@ -1,14 +1,12 @@
 {
   "extends": "./tsconfig.basic.json",
-  "include": [
-    "../vite-plugin/*.vite.config.*",
-    "../../electron.vite.config.*",
+  "include": [  
     "../../src/shared/**/*",
     "../../src/main/**/*",
-    "../../src/preload/**/*",
   ],
   "compilerOptions": {
     "composite": true,
+    "lib": [],
     "types": [
       "electron-vite/node"
     ]
