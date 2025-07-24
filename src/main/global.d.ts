@@ -1,6 +1,9 @@
 export {};
 
 declare global {
+  /** 全局日志打印门面 */
+  const logger: import('winston').Logger;
+
   interface String {
     /**
      * 格式化字符串, 支持数字补零和自定义小数位数

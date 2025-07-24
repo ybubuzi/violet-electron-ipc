@@ -12,7 +12,7 @@ export function throwError2() {
   throw new Error('this is a super error');
 }
 export function throwError3() {
-  return new Promise((r, e) => {
+  return new Promise((_r, e) => {
     e('12312313');
   });
 }

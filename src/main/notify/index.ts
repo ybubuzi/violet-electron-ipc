@@ -61,7 +61,7 @@ function setupWebContentLifecycleHandlers(webContent: WebContents) {
 
   // 当窗口关闭或 webContent 被销毁时触发
   const destroyHandler = () => {
-    console.log(`[Notify] WebContents (ID: {0}) destroyed. Cleaning up.`.format(webContent.id));
+    logger.info(`[Notify] WebContents (ID: {0}) destroyed. Cleaning up.`.format(webContent.id));
     clearSenderRegistrations(webContent); // 清理通知注册
     NOTIFY_WAIT_QUEUE.delete(webContent);
     LIFECYCLE_HANDLER_FLAG_MAPPER.delete(webContent);
@@ -103,11 +103,11 @@ function doAddTargetNotify(event: string, webContent: WebContents) {
  * @param invokeEvent IPC调用事件对象
  */
 export function rendererReadyForNotifications(webContent: WebContents) {
-  console.log(`[Notify] WebContents (ID: {0}) is ready for notifications.`.format(webContent.id));
+  logger.info(`[Notify] WebContents (ID: {0}) is ready for notifications.`.format(webContent.id));
 
   const waitingEvents = NOTIFY_WAIT_QUEUE.get(webContent);
   if (waitingEvents && waitingEvents.size > 0) {
-    console.log(`[Notify] Processing wait queue for WebContents (ID: {0}). Events:`.format(webContent.id), waitingEvents);
+    logger.info(`[Notify] Processing wait queue for WebContents (ID: {0}). Events:`.format(webContent.id), waitingEvents);
     waitingEvents.forEach((event) => {
       // 对每个在等待队列里的事件，执行真正的注册逻辑
       doAddTargetNotify(event, webContent);
@@ -130,7 +130,7 @@ export function addTargetNotify<T extends IPC.NotifyEvent>(event: T, invokeEvent
   }
 
   // 如果已就绪，直接执行注册
-  console.log(`[Notify] Adding target for event '{0}' to WebContents (ID: {1}).`.format(event, webContent.id));
+  logger.info(`[Notify] Adding target for event '{0}' to WebContents (ID: {1}).`.format(event, webContent.id));
   doAddTargetNotify(event, webContent);
 }
 
@@ -160,7 +160,7 @@ export function removeTargetNotify<T extends IPC.NotifyEvent>(event: T, invokeEv
       NOTIFY_SENDER_STATUS_MAPPER.delete(webContent);
     }
   }
-  console.log(`[Notify] Removed target for event '{0}' from WebContents (ID: {1}).`.format(event, webContent.id));
+  logger.info(`[Notify] Removed target for event '{0}' from WebContents (ID: {1}).`.format(event, webContent.id));
 }
 
 /**

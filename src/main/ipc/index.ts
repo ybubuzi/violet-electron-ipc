@@ -48,7 +48,7 @@ function deepIpcHandle(module: Object, prefix: string = '') {
           return ipcResultWrap(handle, result, error);
         });
       });
-      console.log(`handle: [{0}] 注册了`.format(handle));
+      logger.info(`handle: [{0}] 注册了`.format(handle));
     }
     if (typeof member === 'object') {
       deepIpcHandle(member, handle);
