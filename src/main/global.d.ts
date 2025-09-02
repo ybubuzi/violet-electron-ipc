@@ -88,4 +88,35 @@ declare global {
      */
     bitMask(mask: number): number;
   }
+
+  interface PromiseConstructor {
+    /**
+     * 基于ES2025的Promise.try实现
+     * 接受一个任意类型的回调函数（无论其是同步或异步，返回结果或抛出异常），
+     * 并将其结果封装成一个 Promise
+     * @param func
+     * @param args
+     * @example
+     * // 下面的示例接受一个回调函数，将其“提升”为一个 promise，处理结果，并进行一些错误处理：
+     * function doSomething(action) {
+     *   return Promise.try(action)
+     *     .then((result) => console.log(result))
+     *     .catch((error) => console.error(error))
+     *     .finally(() => console.log("完成"));
+     * }
+     *
+     * doSomething(() => "同步的结果");
+     *
+     * doSomething(() => {
+     *   throw new Error("同步的错误");
+     * });
+     *
+     * doSomething(async () => "异步的结果");
+     *
+     * doSomething(async () => {
+     *   throw new Error("异步的错误");
+     * });
+     */
+    try<T = unknown>(func: Function, ...args: unknown[]): Promise<T>;
+  }
 }
