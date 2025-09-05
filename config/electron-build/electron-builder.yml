@@ -16,7 +16,7 @@ asarUnpack:
 win:
   executableName: ipc-demo
   # 跳过签名，除非你确定需要，不然会打包报错
-  sign: 
+  # sign: 
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
