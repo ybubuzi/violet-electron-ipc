@@ -20,5 +20,6 @@
     ".editorconfig": true,
     "node_modules": true,
     "dist": true
-  }
+  },
+  "files.eol": "\n"
 }

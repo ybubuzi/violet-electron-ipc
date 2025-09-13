@@ -81,6 +81,7 @@ export function useSplitDepLoaderPlugin(config: UserConfig) {
   const plugins = config.main?.plugins ?? [];
   const plugin = splitDepLoaderPlugin();
   if (plugins.length === 0) {
+    // @ts-ignore
     config.main.plugins = [plugin];
     return;
   }
@@ -93,6 +94,6 @@ export function useSplitDepLoaderPlugin(config: UserConfig) {
   } else {
     plugins.push(plugin);
   }
-
+  // @ts-ignore
   config.main.plugins = plugins;
 }

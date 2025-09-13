@@ -57,11 +57,13 @@ async function spawn(command: string, commandArgs: string[], spawnOptions: child
 
     // 监听标准输出数据
     childProcess.stdout?.on('data', (data: Buffer) => {
+      // @ts-ignore
       processOutput.stdout = concat(data, processOutput.stdout);
     });
 
     // 监听标准错误输出数据
     childProcess.stderr?.on('data', (data: Buffer) => {
+      // @ts-ignore
       processOutput.stderr = concat(data, processOutput.stderr);
     });
 
