@@ -3,7 +3,7 @@ import { type Plugin } from 'vite';
 import type { UserConfig } from 'electron-vite';
 
 const EXTEND_INDEX = '$/config/scripts/deps-loader';
-
+const EXTEND_RE = /scripts(\/|\\)deps-loader/;
 export function splitDepLoaderPlugin(): Plugin | null {
   return {
     name: 'split:deps:loader',
@@ -25,6 +25,15 @@ export function splitDepLoaderPlugin(): Plugin | null {
         return {
           code: `import '${EXTEND_INDEX}';\n${code}`
         };
+      }
+    },
+    load(id) {
+      if (EXTEND_RE.test(id)) {
+        this.emitFile({
+          type: 'chunk',
+          id: id,
+          name: 'deps-loader'
+        });
       }
     }
   };

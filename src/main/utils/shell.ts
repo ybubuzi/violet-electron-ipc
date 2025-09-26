@@ -1,13 +1,14 @@
 import child from 'node:child_process';
 
+type IOStream = Buffer<ArrayBufferLike> | string;
 /**
  * 执行命令结果接口定义
  */
 interface ExecResult {
   /** 标准输出内容 */
-  stdout: string;
+  stdout: IOStream;
   /** 标准错误输出内容 */
-  stderr: string;
+  stderr: IOStream;
 }
 
 /**
