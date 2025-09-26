@@ -2,7 +2,7 @@ import { resolve } from 'path';
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite';
 import vue from '@vitejs/plugin-vue';
 import { useAliasPathPlugin } from './config/vite-plugin/alias.vite.config';
-import { useSplitDepLoaderPlugin } from './config/vite-plugin/split-deps-loader.vite.config';
+import { useSplitDepLoaderPlugin } from './config/vite-plugin/split-deps.vite.config';
 import type { UserConfig } from 'electron-vite';
 
 export default defineConfig((_cfg) => {
