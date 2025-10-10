@@ -5,7 +5,10 @@ const pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json'))
 const name = pkg.name;
 const version = pkg.version;
 const productName = pkg.productName ?? name;
-const buildTime = new Date().toISOString().substring(0, 19).replace(/[-T:]/g, '');
+const buildTime = new Date()
+  .toLocaleString()
+  .replace(/[\/\s:]/g, '')
+  .substring(0, 12);
 
 export default {
   appId: pkg.appId, // 从 package.json 的 appId 字段获取（com.example.myapp）
