@@ -3,6 +3,7 @@ import { defineConfig, externalizeDepsPlugin } from 'electron-vite';
 import vue from '@vitejs/plugin-vue';
 import { useAliasPathPlugin } from './config/vite-plugin/alias.vite.config';
 import { useSplitDepLoaderPlugin } from './config/vite-plugin/split-deps.vite.config';
+import { bytecodePlugin } from './config/vite-plugin/overload.bytecodePlugin.vite.config';
 import type { UserConfig } from 'electron-vite';
 
 export default defineConfig((_cfg) => {
@@ -11,6 +12,15 @@ export default defineConfig((_cfg) => {
       plugins: [
         externalizeDepsPlugin({
           exclude: ['nanoid']
+        }),
+        bytecodePlugin({
+          exclude: (id) => {
+            console.log(id);
+            if (id.includes('src/main/exclude_custom')) {
+              return true;
+            }
+            return false;
+          }
         })
       ],
       build: {

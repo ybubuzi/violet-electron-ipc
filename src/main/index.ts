@@ -5,8 +5,9 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '$/resources/icon.png?asset';
 import { useIpcHandle } from '@/main/ipc';
 import { sendToWebContent } from '@/main/notify';
-
+import { sayHi } from './exclude_custom';
 function createWindow(): void {
+  sayHi();
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,

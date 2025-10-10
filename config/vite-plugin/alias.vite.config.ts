@@ -10,6 +10,9 @@ export function useAliasPathPlugin(config: UserConfig) {
   config.main!.resolve ??= {};
   config.main!.resolve!.alias = option;
 
+  config.preload!.resolve ??= {};
+  config.preload!.resolve!.alias = option;
+
   config.renderer!.resolve ??= {};
   config.renderer!.resolve!.alias = Object.assign(
     {
