@@ -38,19 +38,24 @@ export function splitDepLoaderPlugin(): Plugin | null {
     }
   };
 }
-export function useSplitDepLoaderPlugin(config: UserConfig) {
-  const plugins = config.main?.plugins ?? [];
+
+function injectPlugin(config: any, propties: string) {
+  const plugins = config[propties]?.plugins ?? [];
   const plugin = splitDepLoaderPlugin();
 
   if (plugins.length === 0) {
     // @ts-ignore
-    config.main.plugins = [plugin];
+    config[propties].plugins = [plugin];
     return;
   } else {
     plugins.push(plugin);
   }
 
   // @ts-ignore
-  config.main.plugins = plugins;
+  config[propties].plugins = plugins;
+}
+export function useSplitDepLoaderPlugin(config: UserConfig) {
+  injectPlugin(config, 'main');
+  injectPlugin(config, 'preload');
 }
 export default useSplitDepLoaderPlugin;

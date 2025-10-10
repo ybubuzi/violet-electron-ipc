@@ -2,10 +2,14 @@ import Module from 'module';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
+
 const require = Module.createRequire(import.meta.url);
 const ORIGIN_MODULE_RESOLVE = Module._resolveFilename;
 const CWD_NODE_MODULE = path.join(process.cwd(), 'node_modules');
 const DEEP_NODE_MODUELE = path.join(CWD_NODE_MODULE, 'electron-builder', 'node_modules');
+const DEPS_ASAR_FILENAME = 'deps.asar';
+const DEPS_ASAR_VER_FILENAME = 'deps.ver.json';
+
 Module._resolveFilename = function (id, parent, isMain, options) {
   const paths = parent.paths;
   if (!paths.includes(CWD_NODE_MODULE)) {
@@ -33,6 +37,38 @@ const { readPackageJson } = require('app-builder-lib/out/util/packageMetadata.js
 // 导入第三方模块
 const { normalizeOptions } = require('electron-builder/out/builder.js');
 const asar = require('@electron/asar');
+
+const pkg = require('../../package.json');
+
+/**
+ * 判定是否需要重新构建分离依赖归档文件
+ * @param {*} outputDirectory
+ * @returns
+ */
+function hasRebuildDepsAsar(projectRoot) {
+  const asarPath = path.join(projectRoot, 'dist', DEPS_ASAR_FILENAME);
+  if (!fs.existsSync(asarPath)) {
+    return true;
+  }
+  try {
+    const content = asar.extractFile(asarPath, DEPS_ASAR_VER_FILENAME);
+    const asarDep = JSON.parse(content.toString());
+    const currDep = pkg.dependencies;
+    const totalDep = Object.keys(currDep);
+    if (totalDep.length != Object.keys(asarDep).length) {
+      return true;
+    }
+    for (const name of totalDep) {
+      if (currDep[name] !== asarDep[name]) {
+        return true;
+      }
+    }
+    return false;
+  } catch (error) {
+    console.error(error);
+    return true;
+  }
+}
 
 /**
  * 根据配置创建框架信息
@@ -136,6 +172,10 @@ async function splitDeps(packager, outputDirectory) {
       await copyAppFiles(fileSet, packager, transformer);
     }
   }
+  fs.writeFileSync(
+    path.join(outputDirectory, 'node_modules', DEPS_ASAR_VER_FILENAME),
+    JSON.stringify(pkg.dependencies, null, 2)
+  );
 }
 
 /**
@@ -216,7 +256,7 @@ async function raw2Build(rawBuildOptions, dependenciesAsarPath) {
  * @returns {Promise<string>} 生成的 asar 文件路径
  */
 async function doArchive(modulesDirectory, outputDirectory) {
-  const asarOutputPath = path.join(outputDirectory, 'deps.asar');
+  const asarOutputPath = path.join(outputDirectory, DEPS_ASAR_FILENAME);
   await asar.createPackage(modulesDirectory, asarOutputPath);
   return asarOutputPath;
 }
@@ -241,7 +281,9 @@ async function doBuild(projectRoot, configFilePath) {
   // 获取项目目录和配置
   const projectDirectory = projectRoot;
   const rawBuildConfig = await getRawConfig(projectDirectory, configFilePath);
-
+  const depsRootPath = path.join(projectRoot, 'dist');
+  fs.mkdirSync(depsRootPath, { recursive: true });
+  const depsAsarPath = path.join(depsRootPath, DEPS_ASAR_FILENAME);
   // 标准化构建选项
   const normalizedBuildOptions = normalizeOptions({
     config: rawBuildConfig
@@ -250,26 +292,19 @@ async function doBuild(projectRoot, configFilePath) {
   // 创建打包器实例
   const packager = new Packager(normalizedBuildOptions);
 
-  // 创建临时目录用于分离依赖
-  const nodeModulesTempDir = path.join(os.tmpdir(), getTempName());
-  console.log(`临时目录: ${nodeModulesTempDir}`);
-
-  try {
+  if (hasRebuildDepsAsar(projectDirectory)) {
+    // 创建临时目录用于分离依赖
+    const nodeModulesTempDir = path.join(os.tmpdir(), getTempName());
+    console.log(`临时目录: ${nodeModulesTempDir}`);
     // 分离依赖到临时目录
     await splitDeps(packager, nodeModulesTempDir);
-
     // 将依赖打包成 asar 文件
-    const dependenciesAsarPath = await doArchive(
-      path.join(nodeModulesTempDir, 'node_modules'),
-      path.join(nodeModulesTempDir, 'temp')
-    );
-
-    // 执行主构建过程
-    await raw2Build(normalizedBuildOptions, dependenciesAsarPath);
-  } finally {
-    // 清理临时目录
-    await fs.promises.rm(nodeModulesTempDir, { recursive: true, force: true });
+    await doArchive(path.join(nodeModulesTempDir, 'node_modules'), depsRootPath);
+    // 移除创建的临时文件夹
+    fs.promises.rm(nodeModulesTempDir, { recursive: true, force: true });
   }
+  // 执行主构建过程
+  await raw2Build(normalizedBuildOptions, depsAsarPath);
 }
 // 获取项目根目录和配置文件路径
 const projectRootDirectory = process.cwd();
