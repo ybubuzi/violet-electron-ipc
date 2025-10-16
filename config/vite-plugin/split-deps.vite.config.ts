@@ -55,6 +55,10 @@ function injectPlugin(config: any, propties: string) {
   config[propties].plugins = plugins;
 }
 export function useSplitDepLoaderPlugin(config: UserConfig) {
+  // 非生产环境禁用插件
+  if (process.env.NODE_ENV_ELECTRON_VITE !== 'production') {
+    return null;
+  }
   injectPlugin(config, 'main');
   injectPlugin(config, 'preload');
 }
