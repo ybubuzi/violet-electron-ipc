@@ -1,86 +1,35 @@
 import '@/main/extend';
-import { app, shell, BrowserWindow, ipcMain } from 'electron';
-import { join } from 'path';
-import { electronApp, optimizer, is } from '@electron-toolkit/utils';
-import icon from '$/resources/icon.png?asset';
+import { app, BrowserWindow } from 'electron';
+import { electronApp } from '@electron-toolkit/utils';
 import { useIpcHandle } from '@/main/ipc';
-import { sendToWebContent } from '@/main/notify';
+import { createMain } from '@/main/window/main';
+import * as pkg from '$/package.json';
 
-function createWindow(): void {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
-    show: false,
-    autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
-    webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+async function main(_args?: string[]) {
+  // @ts-ignore
+  const USER_IDENTIFY = pkg.userIdentify ?? 'com.bubuzi.snapshot';
+
+  await app.whenReady();
+  // 启动ipc注册
+  useIpcHandle();
+  // 应用用户模型 ID
+  electronApp.setAppUserModelId(USER_IDENTIFY);
+  // 获取应用单例锁,禁用应用多次调用
+  const gotTheLock = app.requestSingleInstanceLock();
+  if (!gotTheLock) {
+    app.quit();
+    return;
+  }
+  app.on('activate', function () {
+    // 激活窗口时若不存在窗口则创建，适用于托盘启动窗口
+    if (BrowserWindow.getAllWindows().length === 0) createMain();
+  });
+
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit();
     }
   });
-
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show();
-  });
-
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url);
-    return { action: 'deny' };
-  });
-
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
-  } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
-  }
+  createMain();
 }
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
-  useIpcHandle();
-  // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron');
-  setInterval(() => {
-    sendToWebContent('login', {
-      username: 'bubuzi',
-      password: '123456'
-    });
-  }, 1000);
-  setInterval(() => {
-    sendToWebContent('hello', "i'm bubuzi", 123);
-  }, 2000);
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window);
-  });
-
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'));
-
-  createWindow();
-
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-});
-
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
+main();

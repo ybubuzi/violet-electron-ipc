@@ -48,5 +48,6 @@ export default {
     uninstallDisplayName: `卸载${productName}`,
     createDesktopShortcut: 'always'
   },
-  npmRebuild: false
+  npmRebuild: false,
+  electronLanguages: ['zh-CN', 'en-US']
 };
