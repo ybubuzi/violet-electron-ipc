@@ -1,6 +1,6 @@
 import path from 'path';
 import { BrowserWindow, shell } from 'electron';
-import { is } from '@/main/utils/w_tool';
+import { is, optimizer } from '@/main/utils/w_tool';
 import { getOutFile } from '@/main/utils/paths';
 import icon from '$/resources/icon.png?asset';
 
@@ -33,6 +33,8 @@ export function createMain() {
   window.on('ready-to-show', () => {
     window.show();
   });
+
+  optimizer.watchWindowShortcuts(window);
   // 窗口中打开窗口时的处理函数，当渲染进程调用window.open触发回调
   window.webContents.setWindowOpenHandler((details) => {
     // 启动外部程序打开窗口

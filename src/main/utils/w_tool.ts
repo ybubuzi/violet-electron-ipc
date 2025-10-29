@@ -100,7 +100,7 @@ const optimizer = {
    * @param window 目标窗口实例
    * @param shortcutOptions 快捷键配置选项
    */
-  watchWindowShortcuts(window: BrowserWindow | BrowserView, shortcutOptions: ShortcutOptions) {
+  watchWindowShortcuts(window: BrowserWindow | BrowserView, shortcutOptions?: ShortcutOptions) {
     if (!window) return;
     const { webContents } = window;
     const { escToCloseWindow = false, zoom = false } = shortcutOptions || {};
