@@ -11,7 +11,7 @@ async function main(_args?: string[]) {
 
   await app.whenReady();
   // 启动ipc注册
-  useIpcHandle();
+  await useIpcHandle();
   // 应用用户模型 ID
   electronApp.setAppUserModelId(USER_IDENTIFY);
   // 获取应用单例锁,禁用应用多次调用

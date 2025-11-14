@@ -1,4 +1,3 @@
-import * as Handles from './handles';
 import { ipcMain, IpcMainInvokeEvent } from 'electron';
 import { run } from './ctx';
 
@@ -56,7 +55,8 @@ function deepIpcHandle(module: Object, prefix: string = '') {
   }
 }
 
-export function useIpcHandle() {
+export async function useIpcHandle() {
+  const Handles = await import('./handles');
   const serviceNameList = Object.keys(Handles);
   for (const serviceName of serviceNameList) {
     const service = Handles[serviceName];
