@@ -3,14 +3,13 @@
  * 提供渲染进程与主进程之间的窗口操作通信接口
  */
 import { BrowserWindow, IpcMainInvokeEvent } from 'electron';
-import { getStore } from '../ctx';
 
 /**
  * 获取当前 IPC 事件对应的窗口实例
  * @returns BrowserWindow 实例或 null
  */
 function getTargetWindow(): BrowserWindow | null {
-  const event = getStore<IpcMainInvokeEvent>();
+  const event = Promise.getContext<IpcMainInvokeEvent>();
   const window = BrowserWindow.fromWebContents(event.sender);
   return window;
 }

@@ -1,5 +1,5 @@
 import { resolve } from 'path';
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite';
+import { defineConfig, externalizeDepsPlugin, bytecodePlugin } from 'electron-vite';
 import vue from '@vitejs/plugin-vue';
 import { useAliasPathPlugin } from './config/vite-plugin/alias.vite.config';
 import { useSplitDepLoaderPlugin } from './config/vite-plugin/split-deps.vite.config';
@@ -11,7 +11,8 @@ export default defineConfig((_cfg) => {
       plugins: [
         externalizeDepsPlugin({
           exclude: ['nanoid']
-        })
+        }),
+        bytecodePlugin()
       ],
       build: {
         rollupOptions: {

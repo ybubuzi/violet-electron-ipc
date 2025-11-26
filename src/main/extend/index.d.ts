@@ -94,10 +94,11 @@ declare global {
      * 基于ES2025的Promise.try实现
      * 接受一个任意类型的回调函数（无论其是同步或异步，返回结果或抛出异常），
      * 并将其结果封装成一个 Promise
-     * @param func
-     * @param args
+     * @param func - 要执行的回调函数，可以是同步或异步函数
+     * @param args - 传递给回调函数的参数列表
+     * @returns 包含函数执行结果的 Promise
      * @example
-     * // 下面的示例接受一个回调函数，将其“提升”为一个 promise，处理结果，并进行一些错误处理：
+     * // 下面的示例接受一个回调函数，将其"提升"为一个 promise，处理结果，并进行一些错误处理：
      * function doSomething(action) {
      *   return Promise.try(action)
      *     .then((result) => console.log(result))
@@ -118,5 +119,77 @@ declare global {
      * });
      */
     try<T = unknown>(func: Function, ...args: unknown[]): Promise<T>;
+
+    /**
+     * 基于ES2025的Promise.withResolvers实现
+     * 创建一个 Promise 和对应的 resolve/reject 函数，可以在外部控制 Promise 的状态
+     * 这在某些异步操作需要在 Promise 外部被解决的场景中非常有用
+     * @returns 包含 promise、resolve 和 reject 函数的对象
+     * @example
+     * // 基本用法
+     * const { promise, resolve, reject } = Promise.withResolvers<string>();
+     *
+     * // 在其他地方解决 promise
+     * setTimeout(() => resolve("异步完成"), 1000);
+     *
+     * promise.then(value => console.log(value)); // "异步完成"
+     *
+     * // 也可以拒绝
+     * const { promise: errorPromise, reject: rejectFn } = Promise.withResolvers();
+     * setTimeout(() => rejectFn(new Error("操作失败")), 500);
+     */
+    withResolvers<T>(): {
+      promise: Promise<T>;
+      resolve: (value: T | PromiseLike<T>) => void;
+      reject: (reason?: unknown) => void;
+    };
+
+    /**
+     * 获取当前异步上下文中的存储值
+     * 需要在 runContext 创建的上下文中使用，否则会抛出断言错误
+     * @returns 当前异步上下文中存储的数据
+     * @example
+     * // 在 runContext 中使用
+     * await Promise.runContext({ userId: 123 }, async () => {
+     *   const context = Promise.getContext<{ userId: number }>();
+     *   console.log(context.userId); // 123
+     * });
+     *
+     * // 错误用法：在上下文外调用会抛出异常
+     * try {
+     *   Promise.getContext();
+     * } catch (error) {
+     *   console.error(error.message); // "No store available"
+     * }
+     */
+    getContext<T>(): T;
+
+    /**
+     * 在指定的异步上下文中执行函数
+     * 使用 Node.js 的 AsyncLocalStorage 来创建和传播异步上下文，
+     * 确保在整个异步调用链中都能访问到相同的上下文数据
+     * @param context - 要存储的上下文数据，可以是任意类型
+     * @param fn - 要在上下文中执行的异步函数
+     * @returns 包含函数执行结果的 Promise
+     * @example
+     * // 基本用法
+     * const context = { requestId: 'abc123', user: '张三' };
+     *
+     * await Promise.runContext(context, async () => {
+     *   // 在这个异步函数及其调用的所有异步函数中，都可以访问到相同的上下文
+     *   const ctx = Promise.getContext();
+     *   console.log(ctx.user); // "张三"
+     *
+     *   // 即使在更深层的异步调用中也能获取到上下文
+     *   await someAsyncOperation();
+     * });
+     *
+     * // 配合其他工具使用
+     * function logWithContext(message: string) {
+     *   const context = Promise.getContext<{ requestId: string }>();
+     *   console.log(`[${context.requestId}] ${message}`);
+     * }
+     */
+    runContext<T>(context: unknown, fn: () => Promise<T>): Promise<T>;
   }
 }

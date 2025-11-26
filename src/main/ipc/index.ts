@@ -1,5 +1,4 @@
 import { ipcMain, IpcMainInvokeEvent } from 'electron';
-import { run } from './ctx';
 
 function ipcResultWrap(handle: string, result?: unknown, error?: unknown) {
   const pack = {
@@ -36,7 +35,7 @@ function deepIpcHandle(module: Object, prefix: string = '') {
     const member = module[memberName];
     if (typeof member === 'function') {
       ipcMain.handle(handle, (event: IpcMainInvokeEvent, ...args: any[]) => {
-        return run(event, async () => {
+        return Promise.runContext(event, async () => {
           let result: unknown;
           let error: unknown;
           try {
@@ -57,6 +56,7 @@ function deepIpcHandle(module: Object, prefix: string = '') {
 
 export async function useIpcHandle() {
   const Handles = await import('./handles');
+  console.log(Handles);
   const serviceNameList = Object.keys(Handles);
   for (const serviceName of serviceNameList) {
     const service = Handles[serviceName];

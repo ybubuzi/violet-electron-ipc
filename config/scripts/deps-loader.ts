@@ -15,7 +15,11 @@ Module._load = function (request, parent, isMain) {
   if (module && module.exports) {
     return module.exports;
   }
-  parent.paths = parent.paths.concat(DEP_PATHS);
+  for (const DEP_PATH of DEP_PATHS) {
+    if (!parent.paths.includes(DEP_PATH)) {
+      parent.paths.push(DEP_PATH);
+    }
+  }
   const depModule = ORIGIN_MODULE_LOADER.apply(this, [request, parent, isMain]);
   return depModule;
 };

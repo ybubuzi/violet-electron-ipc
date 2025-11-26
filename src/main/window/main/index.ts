@@ -3,11 +3,9 @@ import { BrowserWindow, shell } from 'electron';
 import { is, optimizer } from '@/main/utils/w_tool';
 import { getOutFile } from '@/main/utils/paths';
 import icon from '$/resources/icon.png?asset';
-
 import type { BrowserWindowConstructorOptions } from 'electron';
 
-const ext = path.parse(import.meta.url).ext;
-const proloadPath = path.join(getOutFile('preload'), 'index' + ext);
+const proloadPath = path.join(getOutFile('preload'));
 const renderHtmlPath = path.join(getOutFile('renderer'), 'index.html');
 
 const option = {
