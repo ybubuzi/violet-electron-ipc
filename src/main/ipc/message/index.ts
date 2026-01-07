@@ -1,3 +1,9 @@
+import { hello } from '@violet/hello';
+
+export function getHello(name: string) {
+  return hello(name);
+}
+
 /**
  * 返回‘hello world’ 字符串
  * @returns

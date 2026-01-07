@@ -1,1 +1,1 @@
-/// <reference path="./extend/index.d.ts" />
+/// <reference path="./extend/extend.d.ts" />
