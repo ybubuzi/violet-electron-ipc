@@ -1,14 +1,14 @@
-import Module from 'module';
-import path from 'path';
-import fs from 'fs';
-import os from 'os';
+import Module from "module";
+import path from "path";
+import fs from "fs";
+import os from "os";
 
 const require = Module.createRequire(import.meta.url);
 const ORIGIN_MODULE_RESOLVE = Module._resolveFilename;
-const CWD_NODE_MODULE = path.join(process.cwd(), 'node_modules');
-const DEEP_NODE_MODUELE = path.join(CWD_NODE_MODULE, 'electron-builder', 'node_modules');
-const DEPS_ASAR_FILENAME = 'deps.asar';
-const DEPS_ASAR_VER_FILENAME = 'deps.ver.json';
+const CWD_NODE_MODULE = path.join(process.cwd(), "node_modules");
+const DEEP_NODE_MODUELE = path.join(CWD_NODE_MODULE, "electron-builder", "node_modules");
+const DEPS_ASAR_FILENAME = "deps.asar";
+const DEPS_ASAR_VER_FILENAME = "deps.ver.json";
 
 Module._resolveFilename = function (id, parent, isMain, options) {
   const paths = parent.paths;
@@ -22,31 +22,39 @@ Module._resolveFilename = function (id, parent, isMain, options) {
 };
 
 // 导入 electron-builder 相关模块
-const { Packager, Platform } = require('app-builder-lib/out/index.js');
-const { AppInfo } = require('app-builder-lib/out/appInfo.js');
-const { getNodeModuleFileMatcher } = require('app-builder-lib/out/fileMatcher.js');
-const { computeNodeModuleFileSets, copyAppFiles } = require('app-builder-lib/out/util/appFileCopier.js');
-const { LibUiFramework } = require('app-builder-lib/out/frameworks/LibUiFramework.js');
-const { ProtonFramework } = require('app-builder-lib/out/ProtonFramework.js');
-const { createElectronFrameworkSupport } = require('app-builder-lib/out/electron/ElectronFramework.js');
-const { createTransformer, isElectronCompileUsed } = require('app-builder-lib/out/fileTransformer.js');
-const { getConfig } = require('app-builder-lib/out/util/config/config.js');
-const { Lazy } = require('lazy-val');
-const { readPackageJson } = require('app-builder-lib/out/util/packageMetadata.js');
+const { Packager, Platform } = require("app-builder-lib/out/index.js");
+const { AppInfo } = require("app-builder-lib/out/appInfo.js");
+const { getNodeModuleFileMatcher } = require("app-builder-lib/out/fileMatcher.js");
+const {
+  computeNodeModuleFileSets,
+  copyAppFiles,
+} = require("app-builder-lib/out/util/appFileCopier.js");
+const { LibUiFramework } = require("app-builder-lib/out/frameworks/LibUiFramework.js");
+const { ProtonFramework } = require("app-builder-lib/out/ProtonFramework.js");
+const {
+  createElectronFrameworkSupport,
+} = require("app-builder-lib/out/electron/ElectronFramework.js");
+const {
+  createTransformer,
+  isElectronCompileUsed,
+} = require("app-builder-lib/out/fileTransformer.js");
+const { getConfig } = require("app-builder-lib/out/util/config/config.js");
+const { Lazy } = require("lazy-val");
+const { readPackageJson } = require("app-builder-lib/out/util/packageMetadata.js");
 
 // 导入第三方模块
-const { normalizeOptions } = require('electron-builder/out/builder.js');
-const asar = require('@electron/asar');
+const { normalizeOptions } = require("electron-builder/out/builder.js");
+const asar = require("@electron/asar");
 
-const pkg = require('../../package.json');
+const pkg = require("../../package.json");
 
 /**
  * 判定是否需要重新构建分离依赖归档文件
  * @param {*} outputDirectory
- * @returns
+ * @returns {boolean}
  */
 function hasRebuildDepsAsar(projectRoot) {
-  const asarPath = path.join(projectRoot, 'dist', DEPS_ASAR_FILENAME);
+  const asarPath = path.join(projectRoot, "dist", DEPS_ASAR_FILENAME);
   if (!fs.existsSync(asarPath)) {
     return true;
   }
@@ -66,8 +74,8 @@ function hasRebuildDepsAsar(projectRoot) {
     return false;
   } catch (error) {
     console.error(error);
-    return true;
   }
+  return true;
 }
 
 /**
@@ -87,12 +95,12 @@ async function createFrameworkInfo(configuration, packager) {
   let nodeVersion = configuration.nodeVersion;
 
   // 如果是 Electron 框架或未指定框架
-  if (frameworkName === 'electron' || frameworkName == null) {
+  if (frameworkName === "electron" || frameworkName == null) {
     return await createElectronFrameworkSupport(configuration, packager);
   }
 
   // 设置默认 Node.js 版本为当前版本
-  if (nodeVersion == null || nodeVersion === 'current') {
+  if (nodeVersion == null || nodeVersion === "current") {
     nodeVersion = process.versions.node;
   }
 
@@ -101,16 +109,16 @@ async function createFrameworkInfo(configuration, packager) {
   const isLaunchUiEnabled = configuration.launchUiVersion !== false;
 
   // 根据框架类型创建对应的框架实例
-  if (frameworkName === 'proton' || frameworkName === 'proton-native') {
+  if (frameworkName === "proton" || frameworkName === "proton-native") {
     return new ProtonFramework(nodeVersion, macOSAppName, isLaunchUiEnabled);
-  } else if (frameworkName === 'libui') {
+  } else if (frameworkName === "libui") {
     return new LibUiFramework(nodeVersion, macOSAppName, isLaunchUiEnabled);
   } else {
     throw new Error(`未知的框架类型: ${frameworkName}`);
   }
 }
 // Electron 编译时的垫片文件名
-const ELECTRON_COMPILE_SHIM_FILENAME = '__shim.js';
+const ELECTRON_COMPILE_SHIM_FILENAME = "__shim.js";
 
 /**
  * 分离依赖文件到指定目录
@@ -138,17 +146,19 @@ async function splitDeps(packager, outputDirectory) {
       ? {
           originalMain: packager.info.metadata.main,
           main: ELECTRON_COMPILE_SHIM_FILENAME,
-          ...config.extraMetadata
+          ...config.extraMetadata,
         }
       : config.extraMetadata,
-    framework.createTransformer == null ? null : framework.createTransformer()
+    framework.createTransformer == null ? null : framework.createTransformer(),
   );
 
   // 遍历所有目标平台
   for (const [platform] of packager.options.targets) {
     // 检查跨平台构建限制
     if (platform === Platform.MAC && process.platform === Platform.WINDOWS.nodeName) {
-      throw new Error('macOS 构建仅在 macOS 系统上支持，请查看 https://electron.build/multi-platform-build');
+      throw new Error(
+        "macOS 构建仅在 macOS 系统上支持，请查看 https://electron.build/multi-platform-build",
+      );
     }
 
     // 创建平台打包器
@@ -161,7 +171,7 @@ async function splitDeps(packager, outputDirectory) {
       outputDirectory,
       (s) => s,
       platformSpecificBuildOptions,
-      packager
+      packager,
     );
 
     // 计算需要包含的 Node.js 模块文件集合
@@ -173,8 +183,8 @@ async function splitDeps(packager, outputDirectory) {
     }
   }
   fs.writeFileSync(
-    path.join(outputDirectory, 'node_modules', DEPS_ASAR_VER_FILENAME),
-    JSON.stringify(pkg.dependencies, null, 2)
+    path.join(outputDirectory, "node_modules", DEPS_ASAR_VER_FILENAME),
+    JSON.stringify(pkg.dependencies, null, 2),
   );
 }
 
@@ -184,13 +194,18 @@ async function splitDeps(packager, outputDirectory) {
  * @param {string} configFilePath - 配置文件路径
  * @returns {Promise<Object>} 构建配置对象
  */
-async function getRawConfig(projectDirectory, configFilePath = 'electron-builder.yml') {
+async function getRawConfig(projectDirectory, configFilePath = "electron-builder.yml") {
   // 读取开发环境的 package.json
-  const devPackageFilePath = path.join(projectDirectory, 'package.json');
+  const devPackageFilePath = path.join(projectDirectory, "package.json");
   const devMetadata = await readPackageJson(devPackageFilePath);
 
   // 获取构建配置
-  const configuration = await getConfig(projectDirectory, configFilePath, null, new Lazy(() => Promise.resolve(devMetadata)));
+  const configuration = await getConfig(
+    projectDirectory,
+    configFilePath,
+    null,
+    new Lazy(() => Promise.resolve(devMetadata)),
+  );
 
   return configuration;
 }
@@ -202,7 +217,7 @@ async function getRawConfig(projectDirectory, configFilePath = 'electron-builder
  */
 function getTargets(processedConfig) {
   // 支持的目标平台列表
-  const supportedTargetNames = ['win', 'mac', 'linux'];
+  const supportedTargetNames = ["win", "mac", "linux"];
   const targetConfigs = [];
 
   // 收集所有已配置的平台目标
@@ -225,8 +240,8 @@ async function raw2Build(rawBuildOptions, dependenciesAsarPath) {
   // 确保 node_modules 被排除在主打包之外
   if (rawBuildOptions.config.files.length !== 0) {
     const fileFilter = rawBuildOptions.config.files[0].filter;
-    if (!fileFilter.includes('!node_modules')) {
-      fileFilter.push('!node_modules');
+    if (!fileFilter.includes("!node_modules")) {
+      fileFilter.push("!node_modules");
     }
   }
 
@@ -239,7 +254,7 @@ async function raw2Build(rawBuildOptions, dependenciesAsarPath) {
       // 添加依赖 asar 文件到 resources 目录
       targetConfig.extraFiles.push({
         from: dependenciesAsarPath,
-        to: './resources'
+        to: "./resources",
       });
     }
   }
@@ -270,7 +285,7 @@ let temporaryFileCounter = 0;
  * @returns {string} 唯一的临时名称
  */
 function getTempName(prefix) {
-  return `${prefix == null ? '' : `${prefix}-`}${tempDirectoryPrefix}-${(temporaryFileCounter++).toString(36)}`;
+  return `${prefix == null ? "" : `${prefix}-`}${tempDirectoryPrefix}-${(temporaryFileCounter++).toString(36)}`;
 }
 /**
  * 执行完整的构建流程
@@ -281,12 +296,12 @@ async function doBuild(projectRoot, configFilePath) {
   // 获取项目目录和配置
   const projectDirectory = projectRoot;
   const rawBuildConfig = await getRawConfig(projectDirectory, configFilePath);
-  const depsRootPath = path.join(projectRoot, 'dist');
+  const depsRootPath = path.join(projectRoot, "dist");
   fs.mkdirSync(depsRootPath, { recursive: true });
   const depsAsarPath = path.join(depsRootPath, DEPS_ASAR_FILENAME);
   // 标准化构建选项
   const normalizedBuildOptions = normalizeOptions({
-    config: rawBuildConfig
+    config: rawBuildConfig,
   });
 
   // 创建打包器实例
@@ -299,7 +314,7 @@ async function doBuild(projectRoot, configFilePath) {
     // 分离依赖到临时目录
     await splitDeps(packager, nodeModulesTempDir);
     // 将依赖打包成 asar 文件
-    await doArchive(path.join(nodeModulesTempDir, 'node_modules'), depsRootPath);
+    await doArchive(path.join(nodeModulesTempDir, "node_modules"), depsRootPath);
     // 移除创建的临时文件夹
     fs.promises.rm(nodeModulesTempDir, { recursive: true, force: true });
   }
@@ -308,7 +323,12 @@ async function doBuild(projectRoot, configFilePath) {
 }
 // 获取项目根目录和配置文件路径
 const projectRootDirectory = process.cwd();
-const electronBuilderConfigPath = path.join(projectRootDirectory, 'config', 'electron-build', 'electron-builder.mjs');
+const electronBuilderConfigPath = path.join(
+  projectRootDirectory,
+  "config",
+  "electron-build",
+  "electron-builder.mjs",
+);
 
 // 执行构建流程
 doBuild(projectRootDirectory, electronBuilderConfigPath);

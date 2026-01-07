@@ -1,21 +1,20 @@
-import { type Plugin } from 'vite';
+import { type Plugin } from "vite";
+import type { UserConfig } from "electron-vite";
 
-import type { UserConfig } from 'electron-vite';
-
-const EXTEND_INDEX = '$/config/scripts/deps-loader';
+const EXTEND_INDEX = "$/config/scripts/deps-loader";
 const EXTEND_RE = /scripts(\/|\\)deps-loader/;
 export function splitDepLoaderPlugin(): Plugin | null {
   return {
-    name: 'split:deps:loader',
-    apply: 'build',
-    enforce: 'pre',
+    name: "split:deps:loader",
+    apply: "build",
+    enforce: "pre",
     async resolveId(id, importer, options) {
-      if (id.endsWith('deps-loader')) {
+      if (id.endsWith("deps-loader")) {
         const resolution = await this.resolve(id, importer, options);
         if (!resolution || resolution.external) return resolution;
         return {
           ...resolution,
-          moduleSideEffects: true
+          moduleSideEffects: true,
         };
       }
     },
@@ -23,43 +22,44 @@ export function splitDepLoaderPlugin(): Plugin | null {
       const moduleInfo = this.getModuleInfo(id);
       if (moduleInfo?.isEntry) {
         return {
-          code: `import '${EXTEND_INDEX}';\n${code}`
+          code: `import '${EXTEND_INDEX}';\n${code}`,
         };
       }
     },
     load(id) {
       if (EXTEND_RE.test(id)) {
         this.emitFile({
-          type: 'chunk',
+          type: "chunk",
           id: id,
-          name: 'deps-loader'
+          name: "deps-loader",
         });
       }
-    }
+    },
   };
 }
 
-function injectPlugin(config: any, propties: string) {
+function injectPlugin(config: UserConfig, propties: keyof UserConfig): void {
   const plugins = config[propties]?.plugins ?? [];
   const plugin = splitDepLoaderPlugin();
 
   if (plugins.length === 0) {
-    // @ts-ignore
+    // @ts-ignore - dynamic property assignment
     config[propties].plugins = [plugin];
     return;
   } else {
     plugins.push(plugin);
   }
 
-  // @ts-ignore
+  // @ts-ignore - dynamic property assignment
   config[propties].plugins = plugins;
 }
-export function useSplitDepLoaderPlugin(config: UserConfig) {
+export function useSplitDepLoaderPlugin(config: UserConfig): void {
   // 非生产环境禁用插件
-  if (process.env.NODE_ENV_ELECTRON_VITE !== 'production') {
-    return null;
+  if (process.env.NODE_ENV_ELECTRON_VITE !== "production") {
+    // do something
+  } else {
+    injectPlugin(config, "main");
+    injectPlugin(config, "preload");
   }
-  injectPlugin(config, 'main');
-  injectPlugin(config, 'preload');
 }
 export default useSplitDepLoaderPlugin;

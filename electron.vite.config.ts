@@ -1,20 +1,14 @@
-import { resolve } from 'path';
-import { defineConfig, externalizeDepsPlugin, bytecodePlugin } from 'electron-vite';
-import vue from '@vitejs/plugin-vue';
-import { useAliasPathPlugin } from './config/vite-plugin/alias.vite.config';
-import { useSplitDepLoaderPlugin } from './config/vite-plugin/split-deps.vite.config';
-import type { UserConfig } from 'electron-vite';
+import { defineConfig } from "electron-vite";
+import vue from "@vitejs/plugin-vue";
+import { useAliasPathPlugin } from "./config/vite-plugin/alias.vite.config";
+import { useSplitDepLoaderPlugin } from "./config/vite-plugin/split-deps.vite.config";
+import type { UserConfig } from "electron-vite";
 
-export default defineConfig((_cfg) => {
+export default defineConfig(() => {
   const config: UserConfig = {
     main: {
-      plugins: [
-        externalizeDepsPlugin({
-          exclude: ['nanoid']
-        }),
-        bytecodePlugin()
-      ],
       build: {
+        bytecode: true,
         rollupOptions: {
           treeshake: {
             /**
@@ -26,23 +20,20 @@ export default defineConfig((_cfg) => {
              */
             moduleSideEffects: (id: string) => {
               return /main(\\|\/)extend/.test(id);
-            }
-          }
-        }
-      }
+            },
+          },
+        },
+      },
     },
 
     preload: {
-      plugins: [externalizeDepsPlugin()]
+      build: {
+        externalizeDeps: true,
+      },
     },
     renderer: {
-      resolve: {
-        alias: {
-          '@renderer': resolve('src/renderer/src')
-        }
-      },
-      plugins: [vue()]
-    }
+      plugins: [vue()],
+    },
   };
   useAliasPathPlugin(config);
   useSplitDepLoaderPlugin(config);

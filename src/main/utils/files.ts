@@ -1,5 +1,5 @@
-import { stat as _stat } from 'fs/promises';
-import { PathLike, Stats } from 'fs';
+import { stat as _stat } from "fs/promises";
+import { PathLike, Stats } from "fs";
 
 /**
  * 文件系统工具模块
@@ -13,7 +13,7 @@ import { PathLike, Stats } from 'fs';
  * - readFile: 读取文件内容
  * - writeFile: 写入文件内容
  */
-export { open, mkdir, readFile, writeFile } from 'fs/promises';
+export { open, mkdir, readFile, writeFile } from "fs/promises";
 
 /**
  * 获取文件或目录状态信息 - 安全版本的 fs.stat，不会抛出异常
@@ -36,7 +36,7 @@ export async function stat(targetPath: PathLike): Promise<Stats | null> {
   try {
     const fileStatistics = await _stat(targetPath);
     return fileStatistics;
-  } catch (error) {
+  } catch {
     // 文件不存在或无权限访问时返回 null，而不是抛出异常
     return null;
   }

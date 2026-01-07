@@ -8,9 +8,13 @@ export interface NotifyTypeMap {
   cool: (msg: string) => void;
 }
 export type NotifyEvent = keyof NotifyTypeMap;
-export type RemnantParams<T extends NotifyEvent> = NotifyTypeMap[T] extends (...args: any) => any
+export type RemnantParams<T extends NotifyEvent> = NotifyTypeMap[T] extends (
+  ...args: unknown[]
+) => unknown
   ? Parameters<NotifyTypeMap[T]>
   : DestructionTuple<NotifyTypeMap[T]>;
-export type NotifyCallback<T extends NotifyEvent> = NotifyTypeMap[T] extends (...args: any) => any
+export type NotifyCallback<T extends NotifyEvent> = NotifyTypeMap[T] extends (
+  ...args: unknown[]
+) => unknown
   ? NotifyTypeMap[T]
   : (...params: DestructionTuple<NotifyTypeMap[T]>) => void;

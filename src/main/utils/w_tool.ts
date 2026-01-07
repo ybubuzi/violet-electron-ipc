@@ -5,7 +5,7 @@
  *
  * @see https://github.com/alex8088/electron-toolkit
  */
-import { app, session, BrowserWindow, BrowserView } from 'electron';
+import { app, session, BrowserWindow, BrowserView } from "electron";
 
 /**
  * 窗口快捷键配置选项
@@ -27,7 +27,7 @@ type ShortcutOptions = {
  */
 const is = {
   // 当前是否是开发环境（通过是否打包来判断）
-  dev: !app.isPackaged
+  dev: !app.isPackaged,
 };
 
 /**
@@ -36,11 +36,11 @@ const is = {
  */
 const platform = {
   // Windows 平台检测
-  isWindows: process.platform === 'win32',
+  isWindows: process.platform === "win32",
   // macOS 平台检测
-  isMacOS: process.platform === 'darwin',
+  isMacOS: process.platform === "darwin",
   // Linux 平台检测
-  isLinux: process.platform === 'linux'
+  isLinux: process.platform === "linux",
 };
 
 /**
@@ -85,8 +85,8 @@ const electronApp = {
    * @returns Promise<boolean> 设置是否成功
    */
   skipProxy() {
-    return session.defaultSession.setProxy({ mode: 'direct' });
-  }
+    return session.defaultSession.setProxy({ mode: "direct" });
+  },
 };
 
 /**
@@ -106,31 +106,34 @@ const optimizer = {
     const { escToCloseWindow = false, zoom = false } = shortcutOptions || {};
 
     // 监听键盘输入事件
-    webContents.on('before-input-event', (event, input) => {
-      if (input.type === 'keyDown') {
+    webContents.on("before-input-event", (event, input) => {
+      if (input.type === "keyDown") {
         // 生产环境下禁用开发者工具快捷键
         if (!is.dev) {
           // 禁用 Ctrl+R / Cmd+R 刷新快捷键
-          if (input.code === 'KeyR' && (input.control || input.meta)) event.preventDefault();
+          if (input.code === "KeyR" && (input.control || input.meta)) event.preventDefault();
           // 禁用 Ctrl+Shift+I / Alt+Cmd+I 开发者工具快捷键
-          if (input.code === 'KeyI' && ((input.alt && input.meta) || (input.control && input.shift))) {
+          if (
+            input.code === "KeyI" &&
+            ((input.alt && input.meta) || (input.control && input.shift))
+          ) {
             event.preventDefault();
           }
         } else {
           // 开发环境下支持 F12 切换开发者工具
-          if (input.code === 'F12') {
+          if (input.code === "F12") {
             if (webContents.isDevToolsOpened()) {
               webContents.closeDevTools();
             } else {
-              webContents.openDevTools({ mode: 'undocked' });
-              console.log('Open dev tool...');
+              webContents.openDevTools({ mode: "undocked" });
+              console.log("Open dev tool...");
             }
           }
         }
 
         // ESC 键关闭窗口（如果启用）
         if (escToCloseWindow) {
-          if (input.code === 'Escape' && input.key !== 'Process') {
+          if (input.code === "Escape" && input.key !== "Process") {
             if (window instanceof BrowserWindow) {
               window.close();
             }
@@ -141,13 +144,14 @@ const optimizer = {
         // 禁用缩放快捷键（如果未启用缩放功能）
         if (!zoom) {
           // 禁用 Ctrl+Minus / Cmd+Minus 缩小
-          if (input.code === 'Minus' && (input.control || input.meta)) event.preventDefault();
+          if (input.code === "Minus" && (input.control || input.meta)) event.preventDefault();
           // 禁用 Ctrl+Shift+Equal / Cmd+Shift+Equal 放大
-          if (input.code === 'Equal' && input.shift && (input.control || input.meta)) event.preventDefault();
+          if (input.code === "Equal" && input.shift && (input.control || input.meta))
+            event.preventDefault();
         }
       }
     });
-  }
+  },
 };
 
 /**

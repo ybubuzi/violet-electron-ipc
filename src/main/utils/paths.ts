@@ -1,14 +1,14 @@
-import { app } from 'electron';
-import { is } from '@/main/utils/w_tool';
-import { parse, join } from 'path';
-import * as pkg from '$/package.json';
-import { fileURLToPath } from 'url';
+import { app } from "electron";
+import { is } from "@/main/utils/w_tool";
+import { parse, join } from "path";
+import * as pkg from "$/package.json";
+import { fileURLToPath } from "url";
 /**
  * 获取exe文件所在目录
  * @returns 执行文件所在路径
  */
 export const getExePath = (): string => {
-  return is.dev ? app.getAppPath() : parse(app.getPath('exe')).dir;
+  return is.dev ? app.getAppPath() : parse(app.getPath("exe")).dir;
 };
 
 /**
@@ -16,7 +16,7 @@ export const getExePath = (): string => {
  * @returns
  */
 export const getUserDataPath = (): string => {
-  return is.dev ? getExePath() : app.getPath('userData');
+  return is.dev ? getExePath() : app.getPath("userData");
 };
 
 /**
@@ -24,7 +24,7 @@ export const getUserDataPath = (): string => {
  * @returns
  */
 export const getDocumentPath = (): string => {
-  return join(app.getPath('documents'), pkg.author, pkg.name);
+  return join(app.getPath("documents"), pkg.author, pkg.name);
 };
 
 /**
@@ -33,7 +33,7 @@ export const getDocumentPath = (): string => {
  */
 export const getResourcePath = (): string => {
   const root = getExePath();
-  return join(root, 'resources');
+  return join(root, "resources");
 };
 
 /**
@@ -42,6 +42,6 @@ export const getResourcePath = (): string => {
  * @param name
  * @returns
  */
-export const getOutFile = (name: 'main' | 'renderer' | 'preload'): string => {
+export const getOutFile = (name: "main" | "renderer" | "preload"): string => {
   return fileURLToPath(new URL(`../${name}`, import.meta.url).href);
 };

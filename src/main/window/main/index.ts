@@ -1,12 +1,12 @@
-import path from 'path';
-import { BrowserWindow, shell } from 'electron';
-import { is, optimizer } from '@/main/utils/w_tool';
-import { getOutFile } from '@/main/utils/paths';
-import icon from '$/resources/icon.png?asset';
-import type { BrowserWindowConstructorOptions } from 'electron';
+import path from "path";
+import { BrowserWindow, shell } from "electron";
+import { is, optimizer } from "@/main/utils/w_tool";
+import { getOutFile } from "@/main/utils/paths";
+import icon from "$/resources/icon.png?asset";
+import type { BrowserWindowConstructorOptions } from "electron";
 
-const proloadPath = path.join(getOutFile('preload'));
-const renderHtmlPath = path.join(getOutFile('renderer'), 'index.html');
+const proloadPath = path.join(getOutFile("preload"));
+const renderHtmlPath = path.join(getOutFile("renderer"), "index.html");
 
 const option = {
   width: 1280,
@@ -17,18 +17,18 @@ const option = {
   fullscreen: false, // is.dev 判定开发环境生产环境来控制全屏
   // 就绪后再显示
   show: false,
-  ...(process.platform === 'linux' ? { icon } : {}),
+  ...(process.platform === "linux" ? { icon } : {}),
   webPreferences: {
     preload: proloadPath,
-    sandbox: false
-  }
+    sandbox: false,
+  },
 } satisfies BrowserWindowConstructorOptions;
 
 export function createMain() {
   const window = new BrowserWindow(option);
   // 关闭菜单栏
   window.removeMenu();
-  window.on('ready-to-show', () => {
+  window.on("ready-to-show", () => {
     window.show();
   });
 
@@ -37,10 +37,10 @@ export function createMain() {
   window.webContents.setWindowOpenHandler((details) => {
     // 启动外部程序打开窗口
     shell.openExternal(details.url);
-    return { action: 'deny' };
+    return { action: "deny" };
   });
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    window.loadURL(process.env['ELECTRON_RENDERER_URL']);
+  if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
+    window.loadURL(process.env["ELECTRON_RENDERER_URL"]);
   } else {
     window.loadFile(renderHtmlPath);
   }

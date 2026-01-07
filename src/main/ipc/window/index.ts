@@ -2,7 +2,7 @@
  * 窗口控制 IPC 处理模块
  * 提供渲染进程与主进程之间的窗口操作通信接口
  */
-import { BrowserWindow, IpcMainInvokeEvent } from 'electron';
+import { BrowserWindow, IpcMainInvokeEvent } from "electron";
 
 /**
  * 获取当前 IPC 事件对应的窗口实例

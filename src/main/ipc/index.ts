@@ -1,14 +1,14 @@
-import { ipcMain, IpcMainInvokeEvent } from 'electron';
+import { ipcMain, IpcMainInvokeEvent } from "electron";
 
 function ipcResultWrap(handle: string, result?: unknown, error?: unknown) {
   const pack = {
     handle,
-    status: !!error ? 'error' : 'success',
+    status: error ? "error" : "success",
     data: result,
     error: {
       handle,
-      message: undefined
-    }
+      message: undefined,
+    },
   };
   if (error) {
     if (error instanceof Error) {
@@ -28,13 +28,13 @@ function ipcResultWrap(handle: string, result?: unknown, error?: unknown) {
  * @param module
  * @param prefix
  */
-function deepIpcHandle(module: Object, prefix: string = '') {
+function deepIpcHandle(module: object, prefix: string = "") {
   const memberList = Object.keys(module);
   for (const memberName of memberList) {
-    const handle = '' === prefix ? memberName : `${prefix}-${memberName}`;
+    const handle = "" === prefix ? memberName : `${prefix}-${memberName}`;
     const member = module[memberName];
-    if (typeof member === 'function') {
-      ipcMain.handle(handle, (event: IpcMainInvokeEvent, ...args: any[]) => {
+    if (typeof member === "function") {
+      ipcMain.handle(handle, (event: IpcMainInvokeEvent, ...args: unknown[]) => {
         return Promise.runContext(event, async () => {
           let result: unknown;
           let error: unknown;
@@ -48,18 +48,18 @@ function deepIpcHandle(module: Object, prefix: string = '') {
       });
       logger.info(`handle: [{0}] 注册了`.format(handle));
     }
-    if (typeof member === 'object') {
+    if (typeof member === "object") {
       deepIpcHandle(member, handle);
     }
   }
 }
 
 export async function useIpcHandle() {
-  const Handles = await import('./handles');
+  const Handles = await import("./handles");
   const serviceNameList = Object.keys(Handles);
   for (const serviceName of serviceNameList) {
     const service = Handles[serviceName];
-    if (typeof service !== 'object') {
+    if (typeof service !== "object") {
       continue;
     }
     deepIpcHandle(service, serviceName);

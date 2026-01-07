@@ -1,11 +1,11 @@
-# 使用单引号
-singleQuote: true
+# 使用双引号（与 eslint-config-prettier 默认一致）
+singleQuote: false
 # 行尾需要有分号
 semi: true
 # 一行最多 100 字符
-printWidth: 128
+printWidth: 100
 # 尾随逗号
-trailingComma: 'none'
+trailingComma: all
 # 使用 2 个空格缩进
 tabWidth: 2
 # 用制表符代替空格缩进行
@@ -22,15 +22,15 @@ proseWrap: preserve
 htmlWhitespaceSensitivity: css
 # 换行符使用 lf
 endOfLine: lf
-# 将多行 HTML（HTML、JSX、Vue、Angular）元素的 > 放在最后一行的末尾，而不是单独放在下一行（不适用于自闭合元素）。
+# 将多行 HTML 元素的 > 放在最后一行的末尾
 bracketSameLine: true
-# 仅格式化文件的一个区段。这两个选项可用于格式化以给定字符偏移量（分别为包含和不包含）为起点和终点的代码
+# 仅格式化文件的一个区段
 rangeStart: 0
-# 只格式化文件顶部包含特殊注释（称为 pragma）的文件
+# 只格式化文件顶部包含特殊注释的文件
 requirePragma: false
-# Prettier 可以在文件顶部插入一个特殊的 @format 标记，指定该文件已被 Prettier 格式化。 如果与 --require-pragma 选项配合使用，效果会更好。 如果文件顶端已经有一个 docblock，那么该选项将在其上添加一个换行符和 @format 标记。
+# 不自动插入 @format 标记
 insertPragma: false
-# 是否缩进 Vue 文件中 <script> 和 <style> 标记内的代码。
+# 是否缩进 Vue 文件中 <script> 和 <style> 标记内的代码
 vueIndentScriptAndStyle: false
-# 在 HTML、Vue 和 JSX 中每行强制单个属性。
+# 在 HTML、Vue 和 JSX 中每行强制单个属性
 singleAttributePerLine: false

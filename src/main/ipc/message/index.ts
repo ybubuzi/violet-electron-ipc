@@ -1,4 +1,4 @@
-import { hello } from '@violet/hello';
+import { hello } from "@violet/hello";
 
 export function getHello(name: string) {
   return hello(name);
@@ -9,21 +9,21 @@ export function getHello(name: string) {
  * @returns
  */
 export function getMsg() {
-  return 'hello world';
+  return "hello world";
 }
 export function throwError1() {
-  throw new Error('this is a error');
+  throw new Error("this is a error");
 }
 export function throwError2() {
-  throw new Error('this is a super error');
+  throw new Error("this is a super error");
 }
 export function throwError3() {
   return new Promise((_r, e) => {
-    e('12312313');
+    e("12312313");
   });
 }
 export function getMsg2(name: string) {
   return `“hello ${name}” from main`;
 }
 
-export * as shy from './shy-girl';
+export * as shy from "./shy-girl";

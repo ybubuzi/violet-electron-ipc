@@ -5,25 +5,34 @@ const handle: ProxyHandler<ApiLike> = {
       return value;
     }
     const parent = target.parent ? `${target.parent}-${name}` : name;
-    async function executor() {}
+    async function executor() {
+      // Proxy carrier - no implementation needed
+    }
     executor.parent = parent;
     target[name] = new Proxy(executor, handle);
     return target[name];
   },
-  apply(target: ApiLike, _thisArg, argumentsList: any[]) {
+  apply(target: ApiLike, _thisArg, argumentsList: unknown[]) {
     if (target.parent) {
-      // @ts-ignore
-      return Promise.resolve(window.electron.ipcRenderer.invoke(target.parent, ...argumentsList)).then((result) => {
-        if (result.status === 'error') {
+      // @ts-ignore - dynamic proxy invoke
+      return Promise.resolve(
+        window.electron.ipcRenderer.invoke(target.parent, ...argumentsList),
+      ).then((result) => {
+        if (result.status === "error") {
           throw result.error;
         }
         return result.data;
       });
     }
     return undefined;
-  }
+  },
 };
-const api = new Proxy(async function () {}, handle);
+const api = new Proxy(
+  async function () {
+    // Proxy carrier - no implementation needed
+  } as ApiLike,
+  handle,
+);
 
 /**
  * 弱引用式事件通知方法
@@ -34,13 +43,14 @@ const api = new Proxy(async function () {}, handle);
  * 由于垃圾回收（GC）的运行机制，自动回收过程可能会经历几秒到数十秒的延迟。
  * 因此，在频繁操作的场景中，建议优先考虑手动移除对象。
  */
+type NotifyCallback = (...args: unknown[]) => void;
 class Notify {
-  private listenerMapper: Map<string, Array<WeakRef<Function>>> = new Map();
+  private listenerMapper: Map<string, Array<WeakRef<NotifyCallback>>> = new Map();
   private ipcEventCounter: Map<string, number> = new Map();
-  addListener(event: string, callback: Function) {
+  addListener(event: string, callback: NotifyCallback) {
     let callbackArray = this.listenerMapper.get(event);
     if (!callbackArray) {
-      callbackArray = new Array();
+      callbackArray = [];
       this.listenerMapper.set(event, callbackArray);
       // @ts-ignore 首次建立监听时，需要建立通知
       api.notify.link(event);
@@ -50,7 +60,7 @@ class Notify {
     this.updateListeners(event, callbackArray);
   }
 
-  removeListener(event: string, callback: Function) {
+  removeListener(event: string, callback: NotifyCallback) {
     let callbackArray = this.listenerMapper.get(event);
     if (callbackArray) {
       callbackArray = callbackArray.filter((item) => {
@@ -65,7 +75,7 @@ class Notify {
     this.updateListeners(event);
   }
 
-  private updateListeners(event: string, listeners?: Array<WeakRef<Function>>) {
+  private updateListeners(event: string, listeners?: Array<WeakRef<NotifyCallback>>) {
     if (!listeners || listeners.length === 0) {
       this.unlinkListener(event);
       this.listenerMapper.delete(event);
@@ -81,30 +91,33 @@ class Notify {
       return;
     }
     this.ipcEventCounter.set(event, 1);
-    // @ts-ignore
-    window.electron.ipcRenderer.on(event, (_invoke: import('electron').IpcRendererEvent, ...args: any[]) => {
-      let callbackArray = this.listenerMapper.get(event);
-      if (!callbackArray) {
-        return;
-      }
-      let hasUpdate = 0;
-      for (const callback of callbackArray) {
-        const target = callback.deref();
-        if (target === undefined) {
-          hasUpdate++;
-          continue;
+    // @ts-ignore - preload exposed API
+    window.electron.ipcRenderer.on(
+      event,
+      (_invoke: import("electron").IpcRendererEvent, ...args: unknown[]) => {
+        let callbackArray = this.listenerMapper.get(event);
+        if (!callbackArray) {
+          return;
         }
-        try {
-          target(...args);
-        } catch (error) {
-          console.error(error);
+        let hasUpdate = 0;
+        for (const callback of callbackArray) {
+          const target = callback.deref();
+          if (target === undefined) {
+            hasUpdate++;
+            continue;
+          }
+          try {
+            target(...args);
+          } catch (error) {
+            console.error(error);
+          }
         }
-      }
-      if (hasUpdate) {
-        callbackArray = callbackArray.filter((item) => item.deref() != undefined);
-        this.updateListeners(event, callbackArray);
-      }
-    });
+        if (hasUpdate) {
+          callbackArray = callbackArray.filter((item) => item.deref() != undefined);
+          this.updateListeners(event, callbackArray);
+        }
+      },
+    );
   }
   private unlinkListener(event: string) {
     // @ts-ignore 回调为空时删除链接
@@ -112,8 +125,8 @@ class Notify {
   }
 }
 
-type ApiLike = Record<string, any> & { parent?: string };
-// @ts-ignore
+type ApiLike = Record<string, unknown> & { parent: string; (): Promise<void> };
+// @ts-ignore - global API injection
 window.api = api;
-// @ts-ignore
+// @ts-ignore - global notify injection
 window.notify = new Notify();

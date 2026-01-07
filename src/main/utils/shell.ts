@@ -1,4 +1,4 @@
-import child from 'node:child_process';
+import child from "node:child_process";
 
 type IOStream = Buffer<ArrayBufferLike> | string;
 /**
@@ -51,30 +51,37 @@ async function exec(command: string, execOptions: child.ExecOptions = {}): Promi
  * @param spawnOptions - 生成进程的选项配置
  * @returns 返回包含输出缓冲区和退出代码的 Promise
  */
-async function spawn(command: string, commandArgs: string[], spawnOptions: child.SpawnOptions = {}): Promise<SpawnResult> {
+async function spawn(
+  command: string,
+  commandArgs: string[],
+  spawnOptions: child.SpawnOptions = {},
+): Promise<SpawnResult> {
   return new Promise<SpawnResult>((resolve, reject) => {
-    const childProcess = child.spawn(command, commandArgs, { ...spawnOptions, shell: true });
+    const childProcess = child.spawn(command, commandArgs, {
+      ...spawnOptions,
+      shell: true,
+    });
     const processOutput = { stdout: Buffer.alloc(0), stderr: Buffer.alloc(0) };
 
     // 监听标准输出数据
-    childProcess.stdout?.on('data', (data: Buffer) => {
-      // @ts-ignore
+    childProcess.stdout?.on("data", (data: Buffer) => {
+      // @ts-ignore - Buffer concat type mismatch
       processOutput.stdout = concat(data, processOutput.stdout);
     });
 
     // 监听标准错误输出数据
-    childProcess.stderr?.on('data', (data: Buffer) => {
-      // @ts-ignore
+    childProcess.stderr?.on("data", (data: Buffer) => {
+      // @ts-ignore - Buffer concat type mismatch
       processOutput.stderr = concat(data, processOutput.stderr);
     });
 
     // 监听进程错误事件
-    childProcess.on('error', (err: Error) => {
+    childProcess.on("error", (err: Error) => {
       reject(err);
     });
 
     // 监听进程关闭事件
-    childProcess.on('close', (exitCode: number | null) => {
+    childProcess.on("close", (exitCode: number | null) => {
       resolve({ ...processOutput, code: exitCode });
     });
   });

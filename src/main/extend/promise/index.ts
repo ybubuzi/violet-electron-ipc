@@ -11,12 +11,12 @@
  * @since 1.0.0
  */
 
-import { AsyncLocalStorage } from 'node:async_hooks';
-import assert from 'assert';
+import { AsyncLocalStorage } from "node:async_hooks";
+import assert from "assert";
 
-// @ts-ignore - 检查是否已经扩展过，避免重复扩展
+// @ts-ignore - custom Promise extension flag
 if (!Promise.__extended__) {
-  // @ts-ignore - 标记已扩展
+  // @ts-ignore - custom Promise extension flag
   Promise.__extended__ = true;
 
   /**
@@ -29,13 +29,13 @@ if (!Promise.__extended__) {
    * @param args - 传递给函数的参数
    * @returns 包装函数执行结果的 Promise
    */
-  // @ts-ignore
-  Promise.try = function (func: Function, ...args: any[]) {
-    if (typeof func !== 'function') {
+  // @ts-ignore - ES2025 Promise.try polyfill
+  Promise.try = function (func: AnyFunction, ...args: unknown[]) {
+    if (typeof func !== "function") {
       return Promise.resolve(func);
     }
-    return new Promise(function (resolve) {
-      resolve(func(...args));
+    return new Promise<unknown>(function (resolve) {
+      resolve(func(...args) as unknown);
     });
   };
 
@@ -43,7 +43,7 @@ if (!Promise.__extended__) {
    * 异步本地存储实例，用于在整个异步调用链中传播上下文数据
    * 基于 Node.js 的 AsyncLocalStorage 实现
    */
-  // @ts-ignore
+  // @ts-ignore - custom async context storage
   Promise.MAIN_LOCAL_SANDBOX = new AsyncLocalStorage();
 
   /**
@@ -55,12 +55,12 @@ if (!Promise.__extended__) {
    * @returns 当前上下文中存储的数据
    * @throws {AssertionError} 当没有可用的存储时抛出
    */
-  // @ts-ignore
+  // @ts-ignore - custom context getter
   Promise.getContext = function <T>(): T {
-    // @ts-ignore
+    // @ts-ignore - access custom sandbox
     const store = Promise.MAIN_LOCAL_SANDBOX.getStore();
     if (!store) {
-      assert.fail('No store available');
+      assert.fail("No store available");
     }
     return store as T;
   };
@@ -74,7 +74,7 @@ if (!Promise.__extended__) {
    *
    * @returns 包含 promise、resolve 和 reject 函数的对象
    */
-  // @ts-ignore
+  // @ts-ignore - ES2025 Promise.withResolvers polyfill
   Promise.withResolvers = function <T>() {
     let resolve: (value: T | PromiseLike<T>) => void, reject: (reason?: unknown) => void;
     const promise = new Promise<T>((_resolve, _reject) => {
@@ -84,7 +84,7 @@ if (!Promise.__extended__) {
     return {
       promise,
       resolve,
-      reject
+      reject,
     };
   };
 
@@ -109,12 +109,12 @@ if (!Promise.__extended__) {
    *   await sendNotification();
    * });
    */
-  // @ts-ignore
+  // @ts-ignore - custom context runner
   Promise.runContext = async function (context: unknown, fn: () => Promise<unknown>) {
-    // @ts-ignore - 创建可控 Promise 来捕获异步执行结果
+    // @ts-ignore - use custom withResolvers
     const { promise, resolve, reject } = Promise.withResolvers();
 
-    // @ts-ignore - 在指定上下文中执行函数
+    // @ts-ignore - use custom sandbox
     Promise.MAIN_LOCAL_SANDBOX.run(context, async () => {
       try {
         // 执行函数并将结果传递给 resolve

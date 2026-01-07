@@ -1,11 +1,11 @@
-import { resolve } from 'path';
-import type { UserConfig } from 'electron-vite';
+import { resolve } from "path";
+import type { UserConfig } from "electron-vite";
 
-export function useAliasPathPlugin(config: UserConfig) {
+export function useAliasPathPlugin(config: UserConfig): void {
   const pwd = process.cwd();
   const option = {
-    '@': resolve(pwd, 'src'),
-    $: resolve(pwd)
+    "@": resolve(pwd, "src"),
+    $: resolve(pwd),
   };
   config.main!.resolve ??= {};
   config.main!.resolve!.alias = option;
@@ -16,10 +16,9 @@ export function useAliasPathPlugin(config: UserConfig) {
   config.renderer!.resolve ??= {};
   config.renderer!.resolve!.alias = Object.assign(
     {
-      '@/renderer': resolve(pwd, 'src/renderer/src')
+      "@/renderer": resolve(pwd, "src/renderer/src"),
     },
-    option
+    option,
   );
-  return config;
 }
 export default useAliasPathPlugin;

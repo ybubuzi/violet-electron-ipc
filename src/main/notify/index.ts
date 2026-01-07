@@ -1,5 +1,5 @@
-import { WebContents, IpcMainInvokeEvent } from 'electron';
-import * as IPC from '@/main/notify/types';
+import { WebContents, IpcMainInvokeEvent } from "electron";
+import * as IPC from "@/main/notify/types";
 
 // #region 全局变量
 /**
@@ -58,10 +58,10 @@ function setupWebContentLifecycleHandlers(webContent: WebContents) {
     clearSenderRegistrations(webContent); // 清理通知注册
     LIFECYCLE_HANDLER_FLAG_MAPPER.delete(webContent);
 
-    webContent.removeListener('destroyed', destroyHandler);
+    webContent.removeListener("destroyed", destroyHandler);
   };
 
-  webContent.on('destroyed', destroyHandler);
+  webContent.on("destroyed", destroyHandler);
 
   // 设置标志位，表示该 webContent 的生命周期事件已在监听
   LIFECYCLE_HANDLER_FLAG_MAPPER.set(webContent, true);
@@ -93,15 +93,20 @@ function doAddTargetNotify(event: string, webContent: WebContents) {
  * @param event 事件名称
  * @param webContent 目标渲染进程
  */
-export function addTargetNotify<T extends IPC.NotifyEvent>(event: T, invokeEvent: IpcMainInvokeEvent) {
+export function addTargetNotify<T extends IPC.NotifyEvent>(
+  event: T,
+  invokeEvent: IpcMainInvokeEvent,
+) {
   const webContent = invokeEvent.sender;
   if (!webContent || webContent.isDestroyed()) {
-    console.error('[Notify] Attempted to add notify target to a destroyed or null WebContents.');
+    console.error("[Notify] Attempted to add notify target to a destroyed or null WebContents.");
     return;
   }
 
   // 如果已就绪，直接执行注册
-  logger.info(`[Notify] Adding target for event '{0}' to WebContents (ID: {1}).`.format(event, webContent.id));
+  logger.info(
+    `[Notify] Adding target for event '{0}' to WebContents (ID: {1}).`.format(event, webContent.id),
+  );
   doAddTargetNotify(event, webContent);
 }
 
@@ -110,10 +115,15 @@ export function addTargetNotify<T extends IPC.NotifyEvent>(event: T, invokeEvent
  * @param event 事件名称
  * @param webContent 目标渲染进程
  */
-export function removeTargetNotify<T extends IPC.NotifyEvent>(event: T, invokeEvent: IpcMainInvokeEvent) {
+export function removeTargetNotify<T extends IPC.NotifyEvent>(
+  event: T,
+  invokeEvent: IpcMainInvokeEvent,
+) {
   const webContent = invokeEvent.sender;
   if (!webContent || webContent.isDestroyed()) {
-    console.error('[Notify] Attempted to remove notify target from a destroyed or null WebContents.');
+    console.error(
+      "[Notify] Attempted to remove notify target from a destroyed or null WebContents.",
+    );
     return;
   }
   const contentSet = NOTIFY_TARGET_MAPPER.get(event);
@@ -131,7 +141,12 @@ export function removeTargetNotify<T extends IPC.NotifyEvent>(event: T, invokeEv
       NOTIFY_SENDER_STATUS_MAPPER.delete(webContent);
     }
   }
-  logger.info(`[Notify] Removed target for event '{0}' from WebContents (ID: {1}).`.format(event, webContent.id));
+  logger.info(
+    `[Notify] Removed target for event '{0}' from WebContents (ID: {1}).`.format(
+      event,
+      webContent.id,
+    ),
+  );
 }
 
 /**
@@ -139,7 +154,10 @@ export function removeTargetNotify<T extends IPC.NotifyEvent>(event: T, invokeEv
  * @param event 事件名称
  * @param params 传递给渲染进程的参数
  */
-export function sendToWebContent<T extends IPC.NotifyEvent>(event: T, ...params: IPC.RemnantParams<T>) {
+export function sendToWebContent<T extends IPC.NotifyEvent>(
+  event: T,
+  ...params: IPC.RemnantParams<T>
+) {
   const contentSet = NOTIFY_TARGET_MAPPER.get(event);
   if (!contentSet || contentSet.size === 0) {
     console.warn(`[Notify] No webContents registered for event: {0}`.format(event));

@@ -1,10 +1,10 @@
 export function equal<T>(a: T, b: T) {
   if (a === b) return true;
-  if (a && b && typeof a == 'object' && typeof b == 'object') {
+  if (a && b && typeof a == "object" && typeof b == "object") {
     if (a.constructor !== b.constructor) {
       return false;
     }
-    let length, i, keys;
+    let length, i;
     if (Array.isArray(a)) {
       length = a.length;
       if (length != (b as Array<unknown>).length) {
@@ -19,7 +19,10 @@ export function equal<T>(a: T, b: T) {
     }
 
     if (a.constructor === RegExp) {
-      return (a as RegExp).source === (b as unknown as RegExp).source && (a as RegExp).flags === (b as unknown as RegExp).flags;
+      return (
+        (a as RegExp).source === (b as unknown as RegExp).source &&
+        (a as RegExp).flags === (b as unknown as RegExp).flags
+      );
     }
     if (a.valueOf !== Object.prototype.valueOf) {
       return a.valueOf() === b.valueOf();
@@ -27,7 +30,7 @@ export function equal<T>(a: T, b: T) {
     if (a.toString !== Object.prototype.toString) {
       return a.toString() === b.toString();
     }
-    keys = Object.keys(a);
+    const keys = Object.keys(a);
     length = keys.length;
     if (length !== Object.keys(b).length) {
       return false;
@@ -39,7 +42,7 @@ export function equal<T>(a: T, b: T) {
     }
 
     for (i = length; i-- !== 0; ) {
-      var key = keys[i];
+      const key = keys[i];
       if (!equal(a[key], b[key])) {
         return false;
       }

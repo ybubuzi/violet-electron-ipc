@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue'
+import { onMounted, reactive } from "vue";
 
-const versions = reactive({ ...window.electron.process.versions })
-onMounted(async ()=>{
-  console.log(await window.api.message.getMsg())
-})
+const versions = reactive({ ...window.electron.process.versions });
+onMounted(async () => {
+  console.log(await window.api.message.getMsg());
+});
 </script>
 
 <template>

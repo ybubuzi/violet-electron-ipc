@@ -2,7 +2,7 @@ export {};
 
 declare global {
   /** 全局日志打印门面 */
-  const logger: import('winston').Logger;
+  const logger: import("winston").Logger;
 
   interface String {
     /**
@@ -25,7 +25,7 @@ declare global {
      * '价格: {0:0.000}'.format(12.3456); // '价格: 12.346'
      * '价格: {0:0.000}'.format(-12.3456); // '价格: -12.346'
      */
-    format(...args: any[]): string;
+    format(...args: unknown[]): string;
   }
 
   interface StringConstructor {
@@ -57,7 +57,7 @@ declare global {
      * //   age > 25;
      * // (注意: 'id', 'name' 前的相对缩进被保留)
      */
-    rawEx(callSite: TemplateStringsArray, ...substitutions: any[]): string;
+    rawEx(callSite: TemplateStringsArray, ...substitutions: unknown[]): string;
   }
 
   interface Number {
