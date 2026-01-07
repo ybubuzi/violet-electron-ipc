@@ -1,11 +1,10 @@
-.vscode
+.*
 node_modules
 dist
 out
-.DS_Store
+logs
 *.log*
 package-lock.json
-build-dev
 electron.vite.config.[0-9]*.mjs
 conf
-logs
+!.gitignore

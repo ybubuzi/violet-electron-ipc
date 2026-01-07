@@ -15,13 +15,6 @@ const NOTIFY_TARGET_MAPPER = new Map<string, Set<WebContents>>();
 const NOTIFY_SENDER_STATUS_MAPPER = new Map<WebContents, Set<string>>();
 
 /**
- * @description 等待队列，用于暂存未就绪的渲染进程的通知注册请求
- * @summary 当 `addTargetNotify` 被调用但渲染进程尚未就绪时，请求将进入此队列
- * @summary 渲染进程就绪后，将遍历此队列，完成所有挂起的注册
- */
-const NOTIFY_WAIT_QUEUE = new Map<WebContents, Set<string>>();
-
-/**
  * @description 标记一个渲染进程的生命周期事件是否已经被监听
  * @summary 防止对同一个 WebContents 重复绑定 'destroyed' 和 'did-finish-load' 事件
  */
@@ -63,7 +56,6 @@ function setupWebContentLifecycleHandlers(webContent: WebContents) {
   const destroyHandler = () => {
     logger.info(`[Notify] WebContents (ID: {0}) destroyed. Cleaning up.`.format(webContent.id));
     clearSenderRegistrations(webContent); // 清理通知注册
-    NOTIFY_WAIT_QUEUE.delete(webContent);
     LIFECYCLE_HANDLER_FLAG_MAPPER.delete(webContent);
 
     webContent.removeListener('destroyed', destroyHandler);
@@ -95,27 +87,6 @@ function doAddTargetNotify(event: string, webContent: WebContents) {
   setupWebContentLifecycleHandlers(webContent);
 }
 // #endregion
-
-// #region 导出的公开API
-/**
- * @description [供渲染进程调用] 渲染进程通知主进程它已准备好接收通知
- * @summary 调用此函数后，将处理等待队列中的所有挂起请求
- * @param invokeEvent IPC调用事件对象
- */
-export function rendererReadyForNotifications(webContent: WebContents) {
-  logger.info(`[Notify] WebContents (ID: {0}) is ready for notifications.`.format(webContent.id));
-
-  const waitingEvents = NOTIFY_WAIT_QUEUE.get(webContent);
-  if (waitingEvents && waitingEvents.size > 0) {
-    logger.info(`[Notify] Processing wait queue for WebContents (ID: {0}). Events:`.format(webContent.id), waitingEvents);
-    waitingEvents.forEach((event) => {
-      // 对每个在等待队列里的事件，执行真正的注册逻辑
-      doAddTargetNotify(event, webContent);
-    });
-    // 处理完毕后，清空该渲染进程的等待队列
-    NOTIFY_WAIT_QUEUE.delete(webContent);
-  }
-}
 
 /**
  * @description [供主进程其他模块调用] 添加一个通知目标至队列

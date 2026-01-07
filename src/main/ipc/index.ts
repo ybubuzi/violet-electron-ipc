@@ -56,7 +56,6 @@ function deepIpcHandle(module: Object, prefix: string = '') {
 
 export async function useIpcHandle() {
   const Handles = await import('./handles');
-  console.log(Handles);
   const serviceNameList = Object.keys(Handles);
   for (const serviceName of serviceNameList) {
     const service = Handles[serviceName];
