@@ -22,6 +22,14 @@
     "build:linux": "npm run build && electron-builder --linux",
     "build:tiny:win": "npm run build && node ./config/electron-build/split-asar-builder.mjs"
   },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ybubuzi/violet-electron-ipc.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ybubuzi/violet-electron-ipc/issues"
+  },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   },
@@ -60,6 +68,7 @@
     "prettier": "^3.5.3",
     "simple-git-hooks": "^2.13.1",
     "typescript": "^5.8.3",
+    "unplugin-info": "^1.2.4",
     "vite": "^7.3.1",
     "vite-plugin-vue-devtools": "^8.0.5",
     "vue": "^3.5.26",

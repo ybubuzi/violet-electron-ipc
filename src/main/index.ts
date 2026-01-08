@@ -4,12 +4,16 @@ import { app, BrowserWindow } from "electron";
 import { electronApp } from "@electron-toolkit/utils";
 import { useIpcHandle } from "@/main/ipc";
 import { createMain } from "@/main/window/main";
+import { sha } from "~build/git";
+import buildTime from "~build/time";
 import * as pkg from "$/package.json";
 
 async function main() {
   // @ts-ignore - custom package.json field
   const USER_IDENTIFY = pkg.userIdentify ?? "com.bubuzi.snapshot";
 
+  logger.info(`sha: ${sha}`);
+  logger.info(`build time: ${buildTime.toLocaleString()}`);
   // 注册主进程补丁
   patchDevToolsConsole();
 

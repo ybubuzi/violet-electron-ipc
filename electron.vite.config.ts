@@ -2,11 +2,14 @@ import { defineConfig } from "electron-vite";
 import vue from "@vitejs/plugin-vue";
 import { useAliasPathPlugin } from "./config/vite-plugin/alias.vite.config";
 import { useSplitDepLoaderPlugin } from "./config/vite-plugin/split-deps.vite.config";
+import UnpluginInfo from "unplugin-info/vite";
+import VueDevTools from "vite-plugin-vue-devtools";
 import type { UserConfig } from "electron-vite";
 
 export default defineConfig(() => {
   const config: UserConfig = {
     main: {
+      plugins: [UnpluginInfo()],
       build: {
         bytecode: true,
         rollupOptions: {
@@ -32,7 +35,7 @@ export default defineConfig(() => {
       },
     },
     renderer: {
-      plugins: [vue()],
+      plugins: [vue(), VueDevTools()],
     },
   };
   useAliasPathPlugin(config);
